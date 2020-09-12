@@ -9,7 +9,6 @@ import (
 	events "github.com/markus-wa/demoinfocs-golang/v2/pkg/demoinfocs/events"
 	ex "github.com/markus-wa/demoinfocs-golang/v2/examples"
     metadata "github.com/markus-wa/demoinfocs-golang/v2/pkg/demoinfocs/metadata"
-	gonav "github.com/pnxenopoulos/csgonavparse"
 )
 
 
@@ -27,25 +26,20 @@ func main() {
 	header, err := p.ParseHeader()
 	checkError(err)
 
-	// Get nav mesh given the map name
-
 	currentMap := header.MapName
-    mapMetadata := metadata.MapNameToMap[currentMap]
-
-    fNav, _ := os.Open("../data/nav/" + currentMap + ".nav")
-	parserNav := gonav.Parser{Reader: fNav}
-	mesh, _ := parserNav.Parse()
-    
+    mapMetadata := metadata.MapNameToMap[currentMap]  
     
     updateRate := (int(header.FrameRate()) + 1) / 4  // frames per second / 4 -> get info every 250ms
-    fmt.Printf("[updaterate] [%d] \n", updateRate) 
     if updateRate >= 0 && updateRate <= 5 {
         updateRate = 32
     }
+	fmt.Printf("[updaterate] [%d] \n", updateRate) 
     
+	played_round := 0
     frame_count := 0
     roundStarted := 0
     freezetimeOver := false
+	print_overallInfo := true
     
 	p.RegisterEventHandler(func(e events.RoundStart) {
 		// Parse round start events
@@ -54,8 +48,15 @@ func main() {
 
 		// Only parse non-warmup rounds
 		if (warmup == false) && (roundStarted == 0) {
-						
-			fmt.Printf("[ROUND START] [%s, %d] [%d, %d] \n", header.MapName, gs.IngameTick(), gs.TeamTerrorists().Score(), gs.TeamCounterTerrorists().Score())
+			played_round = played_round + 1
+			
+			// what map are we playing? who is playing?
+			if (print_overallInfo == true){
+				fmt.Printf("INFO, %s, %s, %s \n", header.MapName, gs.TeamTerrorists().ClanName(), gs.TeamCounterTerrorists().ClanName())
+				print_overallInfo = false
+			}
+			
+			fmt.Printf("ROUND START, %d, %d \n", gs.IngameTick(), played_round)
     		roundStarted = 1
     	}
 	})
@@ -69,8 +70,8 @@ func main() {
 		// Only parse non-warmup rounds
 		if (warmup == false) && (roundStarted == 1) {
 
-			fmt.Printf("[ROUND PURCHASE] [%s, %d] [T, %d, %d, %d] [CT, %d, %d, %d] \n",
-				header.MapName, gs.IngameTick(),
+			fmt.Printf("ROUND PURCHASE, %d, %d, T, %d, %d, %d, CT, %d, %d, %d \n",
+				gs.IngameTick(), played_round, 
 				gs.TeamTerrorists().MoneySpentTotal(),
 				gs.TeamTerrorists().MoneySpentThisRound(),
 				gs.TeamTerrorists().FreezeTimeEndEquipmentValue(),
@@ -82,14 +83,14 @@ func main() {
 			switch e.Winner {
 			case common.TeamTerrorists:
 				// Winner's score + 1 because it hasn't actually been updated yet
-				fmt.Printf("[ROUND END] [%s, %d] [%d, %d] [T, %s, %s, %d] \n", header.MapName, gs.IngameTick(), gs.TeamTerrorists().Score()+1, gs.TeamCounterTerrorists().Score(), gs.TeamTerrorists().ClanName(), gs.TeamCounterTerrorists().ClanName(), e.Reason)
+				fmt.Printf("ROUND END, %d, %d, %d, %d, T, %s, %s, %d \n", gs.IngameTick(), played_round, gs.TeamTerrorists().Score()+1, gs.TeamCounterTerrorists().Score(), gs.TeamTerrorists().ClanName(), gs.TeamCounterTerrorists().ClanName(), e.Reason)
 			case common.TeamCounterTerrorists:
-				fmt.Printf("[ROUND END] [%s, %d] [%d, %d] [CT, %s, %s, %d] \n", header.MapName, gs.IngameTick(), gs.TeamTerrorists().Score(), gs.TeamCounterTerrorists().Score()+1, gs.TeamCounterTerrorists().ClanName(), gs.TeamTerrorists().ClanName(), e.Reason)
+				fmt.Printf("ROUND END, %d, %d, %d, %d, CT, %s, %s, %d \n", gs.IngameTick(), played_round, gs.TeamTerrorists().Score(), gs.TeamCounterTerrorists().Score()+1, gs.TeamCounterTerrorists().ClanName(), gs.TeamTerrorists().ClanName(), e.Reason)
 			default:
 				/* It is currently unknown why rounds may end as draws. Markuswa
 				suggested that it may be due to match medic. [NOTE]
 				*/
-				fmt.Printf("[ROUND END] [%s, %d] DRAW \n", header.MapName, gs.IngameTick())
+				fmt.Printf("ROUND END, %d, %d, DRAW \n", gs.IngameTick(), played_round)
 			}
             roundStarted = 0
             freezetimeOver = false
@@ -102,7 +103,7 @@ func main() {
 
 		// Only parse non-warmup rounds
 		if (warmup == false)  {
-			fmt.Printf("[ROUND END OFFICIAL] [%s, %d] \n", header.MapName, p.GameState().IngameTick())
+			fmt.Printf("ROUND END OFFICIAL, %d, %d \n", p.GameState().IngameTick(), played_round)
 		}
 	})
 
@@ -113,7 +114,15 @@ func main() {
 
 		// Only parse non-warmup match starts
 		if warmup == false {
-			fmt.Printf("[MATCH START] [%s, %d] \n", header.MapName, p.GameState().IngameTick())
+			played_round = played_round + 1
+			
+			// what map are we playing? who is playing?
+			if (print_overallInfo == true){
+				fmt.Printf("INFO, %s, %s, %s \n", header.MapName, p.GameState().TeamTerrorists().ClanName(), p.GameState().TeamCounterTerrorists().ClanName())
+				print_overallInfo = false
+			}
+			
+			fmt.Printf("MATCH START, %d, %d] \n", p.GameState().IngameTick(), played_round)
 			roundStarted = 1
 		}
 	})
@@ -124,7 +133,7 @@ func main() {
 
 		// Only parse non-warmup rounds
 		if (warmup == false) && (roundStarted == 1) {
-			fmt.Printf("[FREEZE END] [%d] \n", p.GameState().IngameTick())
+			fmt.Printf("FREEZE END, %d, %d \n", p.GameState().IngameTick(), played_round)
 			freezetimeOver = true
 		}
 	})
@@ -139,7 +148,6 @@ func main() {
         		var nadeID int64 = 0
     			var nadePosXViz float64 = 0.0
     			var nadePosYViz float64 = 0.0
-    			var nadeAreaPlace string = "NA"
     			
     			// player info
     			var playerSideString string = "NA"
@@ -165,9 +173,9 @@ func main() {
                             playerArmor := player.Armor()
                             playerWeapon := player.ActiveWeapon()
                             
-                            fmt.Printf("[PLAYER INFO] [%d] [%d, %s, %f, %f, %s, %f, %d, %d, %d, %s] \n", 
-                                gameTick,
-                                playerID, playerName, playerPosXViz, playerPosYViz, playerSideString, playerXView,
+                            fmt.Printf("PLAYER INFO, %d, %d, %d, %f, %f, %s, %s, %f, %d, %d, %d, %s \n", 
+                                gameTick, played_round,
+                                playerID, playerPosXViz, playerPosYViz, playerName, playerSideString, playerXView,
                                 playerMoney, playerHealth, playerArmor, playerWeapon)
                         }
                     }
@@ -178,14 +186,7 @@ func main() {
                     // ignore decoy
                     if nade.WeaponInstance.Type != 501 {
                         nadePosXViz, nadePosYViz = mapMetadata.TranslateScale(nade.Trajectory[len(nade.Trajectory)-1].X, nade.Trajectory[len(nade.Trajectory)-1].Y)
-            			nadePosPoint := gonav.Vector3{X: float32(nade.Trajectory[len(nade.Trajectory)-1].X), Y: float32(nade.Trajectory[len(nade.Trajectory)-1].Y), Z: float32(nade.Trajectory[len(nade.Trajectory)-1].Z)}
-            			nadeArea := mesh.GetNearestArea(nadePosPoint, true)
-            			if nadeArea != nil {
-            				if nadeArea.Place != nil {
-            					nadeAreaPlace = nadeArea.Place.Name
-            				}
-            			}
-                		grenadeType := nade.WeaponInstance.Type
+            			grenadeType := nade.WeaponInstance.Type
                 		nadeID = nade.WeaponInstance.UniqueID() 
                         
                         // player
@@ -198,10 +199,10 @@ func main() {
         				}
                         
                         playerID := nade.Thrower.SteamID64            	
-                        fmt.Printf("[GRENADE] [%d] [%d, %f, %f, %s, %s] [%d, %f, %f, %d, %s, %s]\n",
-             			    gameTick,
+                        fmt.Printf("GRENADE, %d, %d, %d, %f, %f, %s, %s, %d, %f, %f, %d, %s \n",
+             			    gameTick, played_round,
              			    playerID, playerPosXViz, playerPosYViz, playerName, playerSideString,
-             			    nadeID, nadePosXViz, nadePosYViz, grenadeType, "air", nadeAreaPlace) 
+             			    nadeID, nadePosXViz, nadePosYViz, grenadeType, "air") 
      			    }
                 }
 
@@ -240,9 +241,9 @@ func main() {
             playerArmor := e.Player.Armor()
             playerWeapon := e.Player.ActiveWeapon()
             
-    		fmt.Printf("[PLAYER INFO] [%d] [%d, %s, %f, %f, %s, %f, %d, %d, %d, %s] \n", 
-                gameTick,
-                playerID, playerName, playerPosXViz, playerPosYViz, playerSideString, playerXView,
+    		fmt.Printf("PLAYER INFO, %d, %d, %d, %f, %f, %s, %s, %f, %d, %d, %d, %s \n", 
+                gameTick, played_round,
+                playerID, playerPosXViz, playerPosYViz, playerName, playerSideString, playerXView,
                 playerMoney, playerHealth, playerArmor, playerWeapon)
 		
 		}
@@ -271,9 +272,9 @@ func main() {
                 playerPosXViz, playerPosYViz := mapMetadata.TranslateScale(e.Player.Position().X, e.Player.Position().Y) 
                 weaponPickup := e.Weapon.Type
                 
-    			fmt.Printf("[ITEM PICKUP] [%d] [%d, %s, %f, %f, %s, %s] \n", 
-    			gameTick, 
-    			playerID, playerName, playerPosXViz, playerPosYViz, playerSideString, weaponPickup)
+    			fmt.Printf("ITEM PICKUP, %d, %d, %d, %f, %f, %s, %s, %s \n", 
+    			gameTick, played_round,
+    			playerID, playerPosXViz, playerPosYViz, playerName, playerSideString, weaponPickup)
     		}
 		}
 	})
@@ -287,27 +288,20 @@ func main() {
 		if (warmup == false) && (roundStarted == 1) {
 			// First block (game state)
 			gameTick := p.GameState().IngameTick()
-			var mapName string = header.MapName
 
 			// Second block (victim location)
 			var victimX float64 = 0.0
 			var victimY float64 = 0.0
-			var victimZ float64 = 0.0
 			var VictimXViz float64 = 0.0
 			var VictimYViz float64 = 0.0
-			var VictimClosestAreaName string = "NA"
 			var VictimViewX float32 = 0.0
-			var VictimViewY float32 = 0.0
 
 			// Third block (attacker location)
 			var attackerX float64 = 0.0
 			var attackerY float64 = 0.0
-			var attackerZ float64 = 0.0
 			var attackerXViz float64 = 0.0
 			var attackerYViz float64 = 0.0
-			var attackerClosestAreaName string = "NA"
 			var attackerViewX float32 = 0.0
-			var attackerViewY float32 = 0.0
 
 			// Fourth block (victim player/team)
 			var victimID uint64 = 0
@@ -339,17 +333,8 @@ func main() {
 				victimID = e.Player.SteamID64
 				victimX = e.Player.Position().X
 				victimY = e.Player.Position().Y
-				victimZ = e.Player.Position().Z
 				VictimXViz, VictimYViz = mapMetadata.TranslateScale(victimX, victimY)
 				VictimViewX = e.Player.ViewDirectionX()
-				VictimViewY = e.Player.ViewDirectionY()
-				victimLoc := gonav.Vector3{X: float32(victimX), Y: float32(victimY), Z: float32(victimZ)}
-				victimArea := mesh.GetNearestArea(victimLoc, true)
-				if victimArea != nil {
-					if victimArea.Place != nil {
-						VictimClosestAreaName = victimArea.Place.Name
-					}
-				}
 				victimName = e.Player.Name
 				if e.Player.Team == 2 {
 					victimSideString = "T"
@@ -365,17 +350,8 @@ func main() {
 				attackerID = e.Attacker.SteamID64
 				attackerX = e.Attacker.Position().X
 				attackerY = e.Attacker.Position().Y
-				attackerZ = e.Attacker.Position().Z
 				attackerXViz, attackerYViz = mapMetadata.TranslateScale(attackerX, attackerY)
 				attackerViewX = e.Attacker.ViewDirectionX()
-				attackerViewY = e.Attacker.ViewDirectionY()
-				attackerLoc := gonav.Vector3{X: float32(attackerX), Y: float32(attackerY), Z: float32(attackerZ)}
-				attackerArea := mesh.GetNearestArea(attackerLoc, true)
-				if attackerArea != nil {
-					if attackerArea.Place != nil {
-						attackerClosestAreaName = attackerArea.Place.Name
-					}
-				}
 				attackerName = e.Attacker.Name
 				if e.Attacker.Team == 2 {
 					attackerSideString = "T"
@@ -383,14 +359,12 @@ func main() {
 					attackerSideString = "CT"
 				}
 			}
-
+			
 			// Print a line of the damage information
-			fmt.Printf("[DAMAGE] [%s, %d] [%f, %f, %f, %f, %s] [%f, %f, %f, %f, %s] [%d, %s, %s] [%d, %s, %s] [%d, %d, %d, %d, %d] \n",
-				mapName, gameTick,
-				VictimXViz, VictimYViz, VictimViewX, VictimViewY,  VictimClosestAreaName,
-				attackerXViz, attackerYViz, attackerViewX, attackerViewY, attackerClosestAreaName,
-				victimID, victimName, victimSideString,
-				attackerID, attackerName, attackerSideString,
+			fmt.Printf("DAMAGE, %d, %d, %d, %f, %f, %s, %s, %f, %d, %f, %f, %s, %s, %f, %d, %d, %d, %d, %d \n",
+				gameTick, played_round,
+				victimID, VictimXViz, VictimYViz, victimName, victimSideString, VictimViewX,
+				attackerID, attackerXViz, attackerYViz, attackerName, attackerSideString, attackerViewX,
 				hpDmg, KillHpDmg, armorDmg, weaponID, hitGroup)
 		}
 	})
@@ -411,26 +385,16 @@ func main() {
 			var playerPosYViz float64 = 0.0
 			var playerName string = "NA"
 			var playerSideString string = "NA"
-			var playerAreaPlace string = "NA"
-					
+
 			// Third block (nade info)
 			var nadeID int64 = 0
 			var nadePosXViz float64 = 0.0
 			var nadePosYViz float64 = 0.0
-			var nadeAreaPlace string = "NA"	
 			
     	    // get player information
     	    if e.Thrower != nil {
     			playerName = e.Thrower.Name
     			playerPosXViz, playerPosYViz = mapMetadata.TranslateScale(e.Thrower.Position().X, e.Thrower.Position().Y)				
-				playerPosPoint := gonav.Vector3{X: float32(e.Thrower.Position().X), Y: float32(e.Thrower.Position().Y), Z: float32(e.Thrower.Position().Z)}
-				playerArea := mesh.GetNearestArea(playerPosPoint, true)
-				
-				if playerArea != nil {
-					if playerArea.Place != nil {
-						playerAreaPlace = playerArea.Place.Name
-					}
-				}		
 				if e.Thrower.Team == 2 {
 					playerSideString = "T"
 				} else if e.Thrower.Team == 3 {
@@ -441,20 +405,13 @@ func main() {
 
     		// get nade information   	    
     	    nadePosXViz, nadePosYViz = mapMetadata.TranslateScale(e.Base().Position.X, e.Base().Position.Y)
-			nadePosPoint := gonav.Vector3{X: float32(e.Base().Position.X), Y: float32(e.Base().Position.Y), Z: float32(e.Base().Position.Z)}
-			nadeArea := mesh.GetNearestArea(nadePosPoint, true)
-			if nadeArea != nil {
-				if nadeArea.Place != nil {
-					nadeAreaPlace = nadeArea.Place.Name
-				}
-			}		
 			grenadeType := e.Base().GrenadeType
 			nadeID = e.Base().Grenade.UniqueID()
             
-			fmt.Printf("[GRENADE] [%d] [%d, %f, %f, %s, %s, %s] [%d, %f, %f, %d, %s, %s]\n",
- 			    gameTick,
- 			    playerID, playerPosXViz, playerPosYViz, playerName, playerSideString, playerAreaPlace,
- 			    nadeID, nadePosXViz, nadePosYViz, grenadeType, "explosion", nadeAreaPlace)
+			fmt.Printf("GRENADE, %d, %d, %d, %f, %f, %s, %s, %d, %f, %f, %d, %s \n",
+ 			    gameTick, played_round, 
+ 			    playerID, playerPosXViz, playerPosYViz, playerName, playerSideString,
+ 			    nadeID, nadePosXViz, nadePosYViz, grenadeType, "explosion")
 		}
 	})
 	
@@ -473,26 +430,16 @@ func main() {
 			var playerPosYViz float64 = 0.0
 			var playerName string = "NA"
 			var playerSideString string = "NA"
-			var playerAreaPlace string = "NA"
 					
 			// Third block (nade info)
 			var nadeID int64 = 0
 			var nadePosXViz float64 = 0.0
 			var nadePosYViz float64 = 0.0
-			var nadeAreaPlace string = "NA"	
 			
     	    // get player information
     	    if e.Thrower != nil {
     			playerName = e.Thrower.Name
     			playerPosXViz, playerPosYViz = mapMetadata.TranslateScale(e.Thrower.Position().X, e.Thrower.Position().Y)				
-				playerPosPoint := gonav.Vector3{X: float32(e.Thrower.Position().X), Y: float32(e.Thrower.Position().Y), Z: float32(e.Thrower.Position().Z)}
-				playerArea := mesh.GetNearestArea(playerPosPoint, true)
-				
-				if playerArea != nil {
-					if playerArea.Place != nil {
-						playerAreaPlace = playerArea.Place.Name
-					}
-				}		
 				if e.Thrower.Team == 2 {
 					playerSideString = "T"
 				} else if e.Thrower.Team == 3 {
@@ -503,20 +450,13 @@ func main() {
 
     		// get nade information   	    
     	    nadePosXViz, nadePosYViz = mapMetadata.TranslateScale(e.Base().Position.X, e.Base().Position.Y)
-			nadePosPoint := gonav.Vector3{X: float32(e.Base().Position.X), Y: float32(e.Base().Position.Y), Z: float32(e.Base().Position.Z)}
-			nadeArea := mesh.GetNearestArea(nadePosPoint, true)
-			if nadeArea != nil {
-				if nadeArea.Place != nil {
-					nadeAreaPlace = nadeArea.Place.Name
-				}
-			}		
 			grenadeType := e.Base().GrenadeType
 			nadeID = e.Base().Grenade.UniqueID()
                         
-			fmt.Printf("[GRENADE] [%d] [%d, %f, %f, %s, %s, %s] [%d, %f, %f, %d, %s, %s]\n",
- 			    gameTick,
- 			    playerID, playerPosXViz, playerPosYViz, playerName, playerSideString, playerAreaPlace,
- 			    nadeID, nadePosXViz, nadePosYViz, grenadeType, "explosion", nadeAreaPlace)
+			fmt.Printf("GRENADE, %d, %d, %d, %f, %f, %s, %s, %d, %f, %f, %d, %s \n",
+ 			    gameTick, played_round,
+ 			    playerID, playerPosXViz, playerPosYViz, playerName, playerSideString,
+ 			    nadeID, nadePosXViz, nadePosYViz, grenadeType, "explosion")
 		}
     })
     
@@ -535,26 +475,16 @@ func main() {
 			var playerPosYViz float64 = 0.0
 			var playerName string = "NA"
 			var playerSideString string = "NA"
-			var playerAreaPlace string = "NA"
 					
 			// Third block (nade info)
 			var nadeID int64 = 0
 			var nadePosXViz float64 = 0.0
 			var nadePosYViz float64 = 0.0
-			var nadeAreaPlace string = "NA"	
 			
     	    // get player information
     	    if e.Thrower != nil {
     			playerName = e.Thrower.Name
     			playerPosXViz, playerPosYViz = mapMetadata.TranslateScale(e.Thrower.Position().X, e.Thrower.Position().Y)				
-				playerPosPoint := gonav.Vector3{X: float32(e.Thrower.Position().X), Y: float32(e.Thrower.Position().Y), Z: float32(e.Thrower.Position().Z)}
-				playerArea := mesh.GetNearestArea(playerPosPoint, true)
-				
-				if playerArea != nil {
-					if playerArea.Place != nil {
-						playerAreaPlace = playerArea.Place.Name
-					}
-				}		
 				if e.Thrower.Team == 2 {
 					playerSideString = "T"
 				} else if e.Thrower.Team == 3 {
@@ -565,20 +495,13 @@ func main() {
 
     		// get nade information   	    
     	    nadePosXViz, nadePosYViz = mapMetadata.TranslateScale(e.Base().Position.X, e.Base().Position.Y)
-			nadePosPoint := gonav.Vector3{X: float32(e.Base().Position.X), Y: float32(e.Base().Position.Y), Z: float32(e.Base().Position.Z)}
-			nadeArea := mesh.GetNearestArea(nadePosPoint, true)
-			if nadeArea != nil {
-				if nadeArea.Place != nil {
-					nadeAreaPlace = nadeArea.Place.Name
-				}
-			}		
 			grenadeType := e.Base().GrenadeType
 			nadeID = e.Base().Grenade.UniqueID()
             
-			fmt.Printf("[GRENADE] [%d] [%d, %f, %f, %s, %s, %s] [%d, %f, %f, %d, %s, %s]\n",
- 			    gameTick,
- 			    playerID, playerPosXViz, playerPosYViz, playerName, playerSideString, playerAreaPlace,
- 			    nadeID, nadePosXViz, nadePosYViz, grenadeType, "explosion", nadeAreaPlace)
+			fmt.Printf("GRENADE, %d, %d, %d, %f, %f, %s, %s, %d, %f, %f, %d, %s \n",
+ 			    gameTick, played_round,
+ 			    playerID, playerPosXViz, playerPosYViz, playerName, playerSideString,
+ 			    nadeID, nadePosXViz, nadePosYViz, grenadeType, "explosion")
 		}
     })
 	
@@ -597,26 +520,16 @@ func main() {
 			var playerPosYViz float64 = 0.0
 			var playerName string = "NA"
 			var playerSideString string = "NA"
-			var playerAreaPlace string = "NA"
 					
 			// Third block (nade info)
 			var nadeID int64 = 0
 			var nadePosXViz float64 = 0.0
 			var nadePosYViz float64 = 0.0
-			var nadeAreaPlace string = "NA"	
 			
     	    // get player information
     	    if e.Thrower != nil {
     			playerName = e.Thrower.Name
     			playerPosXViz, playerPosYViz = mapMetadata.TranslateScale(e.Thrower.Position().X, e.Thrower.Position().Y)				
-				playerPosPoint := gonav.Vector3{X: float32(e.Thrower.Position().X), Y: float32(e.Thrower.Position().Y), Z: float32(e.Thrower.Position().Z)}
-				playerArea := mesh.GetNearestArea(playerPosPoint, true)
-				
-				if playerArea != nil {
-					if playerArea.Place != nil {
-						playerAreaPlace = playerArea.Place.Name
-					}
-				}		
 				if e.Thrower.Team == 2 {
 					playerSideString = "T"
 				} else if e.Thrower.Team == 3 {
@@ -627,20 +540,13 @@ func main() {
 
     		// get nade information   	    
     	    nadePosXViz, nadePosYViz = mapMetadata.TranslateScale(e.Base().Position.X, e.Base().Position.Y)
-			nadePosPoint := gonav.Vector3{X: float32(e.Base().Position.X), Y: float32(e.Base().Position.Y), Z: float32(e.Base().Position.Z)}
-			nadeArea := mesh.GetNearestArea(nadePosPoint, true)
-			if nadeArea != nil {
-				if nadeArea.Place != nil {
-					nadeAreaPlace = nadeArea.Place.Name
-				}
-			}		
 			grenadeType := e.Base().GrenadeType
 			nadeID = e.Base().Grenade.UniqueID()
 
-			fmt.Printf("[GRENADE] [%d] [%d, %f, %f, %s, %s, %s] [%d, %f, %f, %d, %s, %s]\n",
- 			    gameTick,
- 			    playerID, playerPosXViz, playerPosYViz, playerName, playerSideString, playerAreaPlace,
- 			    nadeID, nadePosXViz, nadePosYViz, grenadeType, "expired", nadeAreaPlace)
+			fmt.Printf("GRENADE, %d, %d, %d, %f, %f, %s, %s, %d, %f, %f, %d, %s \n",
+ 			    gameTick, played_round,
+ 			    playerID, playerPosXViz, playerPosYViz, playerName, playerSideString,
+ 			    nadeID, nadePosXViz, nadePosYViz, grenadeType, "expired")
 		}
     })
     
@@ -659,27 +565,16 @@ func main() {
 			var playerPosYViz float64 = 0.0
 			var playerName string = "NA"
 			var playerSideString string = "NA"
-			var playerAreaPlace string = "NA"
 			
 			// Third block (nade info)
 			var nadeID int64 = 0
 			var nadePosXViz float64 = 0.0
 			var nadePosYViz float64 = 0.0
-			var nadeAreaPlace string = "NA"
-			
-			
+
     	    // get player information
     	    if e.Projectile.Thrower != nil {
     			playerName = e.Projectile.Thrower.Name
     			playerPosXViz, playerPosYViz = mapMetadata.TranslateScale(e.Projectile.Thrower.Position().X, e.Projectile.Thrower.Position().Y)				
-				playerPosPoint := gonav.Vector3{X: float32(e.Projectile.Thrower.Position().X), Y: float32(e.Projectile.Thrower.Position().Y), Z: float32(e.Projectile.Thrower.Position().Z)}
-				playerArea := mesh.GetNearestArea(playerPosPoint, true)
-				
-				if playerArea != nil {
-					if playerArea.Place != nil {
-						playerAreaPlace = playerArea.Place.Name
-					}
-				}		
 				if e.Projectile.Thrower.Team == 2 {
 					playerSideString = "T"
 				} else if e.Projectile.Thrower.Team == 3 {
@@ -690,87 +585,16 @@ func main() {
     	    
     	    // get nade information   	    
     	    nadePosXViz, nadePosYViz = mapMetadata.TranslateScale(e.Projectile.Trajectory[0].X, e.Projectile.Trajectory[0].Y)
-			nadePosPoint := gonav.Vector3{X: float32(e.Projectile.Trajectory[0].X), Y: float32(e.Projectile.Trajectory[0].Y), Z: float32(e.Projectile.Trajectory[0].Z)}
-			nadeArea := mesh.GetNearestArea(nadePosPoint, true)
-			if nadeArea != nil {
-				if nadeArea.Place != nil {
-					nadeAreaPlace = nadeArea.Place.Name
-				}
-			}
     		grenadeType := e.Projectile.WeaponInstance.Type
     		nadeID = e.Projectile.WeaponInstance.UniqueID()
     		
-            fmt.Printf("[GRENADE] [%d] [%d, %f, %f, %s, %s, %s] [%d, %f, %f, %d, %s, %s]\n",
- 			    gameTick,
- 			    playerID, playerPosXViz, playerPosYViz, playerName, playerSideString, playerAreaPlace,
- 			    nadeID, nadePosXViz, nadePosYViz, grenadeType, "create", nadeAreaPlace) 
+            fmt.Printf("GRENADE, %d, %d, %d, %f, %f, %s, %s, %d, %f, %f, %d, %s \n",
+ 			    gameTick, played_round,
+ 			    playerID, playerPosXViz, playerPosYViz, playerName, playerSideString,
+ 			    nadeID, nadePosXViz, nadePosYViz, grenadeType, "create") 
             	
         }
 	})
-	/*
-	p.RegisterEventHandler(func(e events.GrenadeEventIf) {
-		// HE explodes, Flash explodes
-		// smoke explodes, but also vanish -> track ID to see if detonate or vanish
-
-		warmup := p.GameState().IsWarmupPeriod()
-
-		// Only parse non-warmup grenade events
-		if (warmup == false) && (roundStarted == 1) {
-			// First block (game state)
-			gameTick := p.GameState().IngameTick()
-
-			// Second block (player info)
-			var playerPosXViz float64 = 0.0
-			var playerPosYViz float64 = 0.0
-			var playerName string = "NA"
-			var playerSideString string = "NA"
-			var playerAreaPlace string = "NA"
-			
-			// Third block (nade info)
-			var nadeID int64 = 0
-			var nadePosXViz float64 = 0.0
-			var nadePosYViz float64 = 0.0
-			var nadeAreaPlace string = "NA"
-
-            // get player information
-			if e.Base().Thrower != nil {				
-				playerName = e.Base().Thrower.Name
-    			playerPosXViz, playerPosYViz = mapMetadata.TranslateScale(e.Base().Thrower.Position().X, e.Base().Thrower.Position().Y)				
-				playerPosPoint := gonav.Vector3{X: float32(e.Base().Thrower.Position().X), Y: float32(e.Base().Thrower.Position().Y), Z: float32(e.Base().Thrower.Position().Z)}
-				playerArea := mesh.GetNearestArea(playerPosPoint, true)
-				
-				if playerArea != nil {
-					if playerArea.Place != nil {
-						playerAreaPlace = playerArea.Place.Name
-					}
-				}		
-				if e.Base().Thrower.Team == 2 {
-					playerSideString = "T"
-				} else if e.Base().Thrower.Team == 3 {
-					playerSideString = "CT"
-				}				
-			}   			
-    			
-    		// get nade information   	    
-    	    nadePosXViz, nadePosYViz = mapMetadata.TranslateScale(e.Base().Position.X, e.Base().Position.Y)
-			nadePosPoint := gonav.Vector3{X: float32(e.Base().Position.X), Y: float32(e.Base().Position.Y), Z: float32(e.Base().Position.Z)}
-			nadeArea := mesh.GetNearestArea(nadePosPoint, true)
-			if nadeArea != nil {
-				if nadeArea.Place != nil {
-					nadeAreaPlace = nadeArea.Place.Name
-				}
-			}		
-			grenadeType := e.Base().GrenadeType
-			nadeID = e.Base().Grenade.UniqueID()
-			
- 			if grenadeType != 503 {   					
-                 fmt.Printf("[GRENADE] [%d] [%f, %f, %s, %s, %s] [%d, %f, %f, %d, %s, %s]\n",
-     			    gameTick,
-     			    playerPosXViz, playerPosYViz, playerName, playerSideString, playerAreaPlace,
-     			    nadeID, nadePosXViz, nadePosYViz, grenadeType, "explosion", nadeAreaPlace) 
- 			}
-		}
-	})*/
 
 	p.RegisterEventHandler(func(e events.GrenadeProjectileDestroy) {
 		// gets triggered if an Entitiy gets destroyed --> nade doesnt exist anymore
@@ -790,26 +614,16 @@ func main() {
 			var playerPosYViz float64 = 0.0
 			var playerName string = "NA"
 			var playerSideString string = "NA"
-			var playerAreaPlace string = "NA"
 			
 			// Third block (nade info)
 			var nadeID int64 = 0
 			var nadePosXViz float64 = 0.0
 			var nadePosYViz float64 = 0.0
-			var nadeAreaPlace string = "NA"
 
             // get player information
 			if e.Projectile.Thrower != nil {			
 				playerName = e.Projectile.Thrower.Name
     			playerPosXViz, playerPosYViz = mapMetadata.TranslateScale(e.Projectile.Thrower.Position().X, e.Projectile.Thrower.Position().Y)				
-				playerPosPoint := gonav.Vector3{X: float32(e.Projectile.Thrower.Position().X), Y: float32(e.Projectile.Thrower.Position().Y), Z: float32(e.Projectile.Thrower.Position().Z)}
-				playerArea := mesh.GetNearestArea(playerPosPoint, true)
-				
-				if playerArea != nil {
-					if playerArea.Place != nil {
-						playerAreaPlace = playerArea.Place.Name
-					}
-				}		
 				if e.Projectile.Thrower.Team == 2 {
 					playerSideString = "T"
 				} else if e.Projectile.Thrower.Team == 3 {
@@ -820,20 +634,13 @@ func main() {
 				
 			// get nade information   	    
     	    nadePosXViz, nadePosYViz = mapMetadata.TranslateScale(e.Projectile.Position().X, e.Projectile.Position().Y)
-			nadePosPoint := gonav.Vector3{X: float32(e.Projectile.Position().X), Y: float32(e.Projectile.Position().Y), Z: float32(e.Projectile.Position().Z)}
-			nadeArea := mesh.GetNearestArea(nadePosPoint, true)
-			if nadeArea != nil {
-				if nadeArea.Place != nil {
-					nadeAreaPlace = nadeArea.Place.Name
-				}
-			}		
 			grenadeType := e.Projectile.WeaponInstance.Type
             nadeID = e.Projectile.WeaponInstance.UniqueID() 		
  			if (grenadeType == 503) || (grenadeType == 502) {   					
-                 fmt.Printf("[GRENADE] [%d] [%d, %f, %f, %s, %s, %s] [%d, %f, %f, %d, %s, %s]\n",
-     			    gameTick,
-     			    playerID, playerPosXViz, playerPosYViz, playerName, playerSideString, playerAreaPlace,
-     			    nadeID, nadePosXViz, nadePosYViz, grenadeType, "destroy", nadeAreaPlace) 
+                 fmt.Printf("GRENADE, %d, %d, %d, %f, %f, %s, %s, %d, %f, %f, %d, %s \n",
+     			    gameTick, played_round,
+     			    playerID, playerPosXViz, playerPosYViz, playerName, playerSideString,
+     			    nadeID, nadePosXViz, nadePosYViz, grenadeType, "destroy") 
  			}
 		}
 	})
@@ -888,8 +695,8 @@ func main() {
     			
         			// lets check if the player who got flashed, is not an spectator and is still alive
                     if (value.Name == e.Player.Name) &&(e.Player.IsAlive())  {
-             			fmt.Printf("[ENEMIESFLASHED] [%d] [%d, %f, %f, %s, %s] [%d, %f, %f, %s, %s] \n",
-            				gameTick,
+             			fmt.Printf("ENEMIESFLASHED, %d, %d, %d, %f, %f, %s, %s, %d, %f, %f, %s, %s \n",
+            				gameTick, played_round,
             				attackerID, attackerXViz, attackerYViz, e.Attacker.Name, attackerSideString,
             				victimID, victimXViz, victimYViz, e.Player.Name, victimSideString)
                 	}
@@ -903,8 +710,8 @@ func main() {
     			
         			// lets check if the player who got flashed, is not an spectator and is still alive
                     if (value.Name == e.Player.Name) &&(e.Player.IsAlive())  {
-            			fmt.Printf("[TEAMFLASHED] [%d] [%d, %f, %f, %s, %s] [%d, %f, %f, %s, %s] \n",
-            				gameTick,
+            			fmt.Printf("TEAMFLASHED, %d, %d, %d, %f, %f, %s, %s, %d, %f, %f, %s, %s \n",
+            				gameTick, played_round,
             				attackerID, attackerXViz, attackerYViz, e.Attacker.Name, attackerSideString,
             				victimID, victimXViz, victimYViz, e.Player.Name, victimSideString)
                 	}
@@ -925,30 +732,21 @@ func main() {
 			// Second block (victim location)
 			var victimX float64 = 0.0
 			var victimY float64 = 0.0
-			var victimZ float64 = 0.0
 			var VictimXViz float64 = 0.0
 			var VictimYViz float64 = 0.0
-			var VictimClosestAreaName string = "NA"
 			var VictimViewX float32 = 0.0
-			var VictimViewY float32 = 0.0
 
 			// Third block (attacker location)
 			var attackerX float64 = 0.0
 			var attackerY float64 = 0.0
-			var attackerZ float64 = 0.0
 			var attackerXViz float64 = 0.0
 			var attackerYViz float64 = 0.0
 			var attackerAssistX float64 = 0.0
 			var attackerAssistY float64 = 0.0
-    		var attackerAssistZ float64 = 0.0
 			var attackerAssistXViz float64 = 0.0
 			var attackerAssistYViz float64 = 0.0
-			var attackerClosestAreaName string = "NA"
 			var attackerViewX float32 = 0.0
-			var attackerViewY float32 = 0.0
 			var attackerAssistViewX float32 = 0.0
-			var attackerAssistViewY float32 = 0.0
-			var attackerAssistClosestAreaName string = "NA"
 
 			// Fourth block (victim player/team)
 			var victimID uint64 = 0
@@ -979,17 +777,8 @@ func main() {
 				victimID = e.Victim.SteamID64
 				victimX = e.Victim.Position().X
 				victimY = e.Victim.Position().Y
-				victimZ = e.Victim.Position().Z
 				VictimXViz, VictimYViz = mapMetadata.TranslateScale(victimX, victimY)
 				VictimViewX = e.Victim.ViewDirectionX()
-				VictimViewY = e.Victim.ViewDirectionY()
-				victimLoc := gonav.Vector3{X: float32(victimX), Y: float32(victimY), Z: float32(victimZ)}
-				victimArea := mesh.GetNearestArea(victimLoc, true)
-				if victimArea != nil {
-					if victimArea.Place != nil {
-						VictimClosestAreaName = victimArea.Place.Name
-					}
-				}
 				victimName = e.Victim.Name
 				if e.Victim.Team == 2 {
 					victimSideString = "T"
@@ -1005,17 +794,8 @@ func main() {
 				attackerID = e.Killer.SteamID64
 				attackerX = e.Killer.Position().X
 				attackerY = e.Killer.Position().Y
-				attackerZ = e.Killer.Position().Z
 				attackerXViz, attackerYViz = mapMetadata.TranslateScale(attackerX, attackerY)
 				attackerViewX = e.Killer.ViewDirectionX()
-				attackerViewY = e.Killer.ViewDirectionY()
-				attackerLoc := gonav.Vector3{X: float32(attackerX), Y: float32(attackerY), Z: float32(attackerZ)}
-				attackerArea := mesh.GetNearestArea(attackerLoc, true)
-				if attackerArea != nil {
-					if attackerArea.Place != nil {
-						attackerClosestAreaName = attackerArea.Place.Name
-					}
-				}
 				attackerName = e.Killer.Name
 				if e.Killer.Team == 2 {
 					attackerSideString = "T"
@@ -1032,17 +812,8 @@ func main() {
 				attackerAssistName = e.Assister.Name
 				attackerAssistX = e.Assister.Position().X
 				attackerAssistY = e.Assister.Position().Y
-				attackerAssistZ = e.Assister.Position().Z
-				attackerAssistXViz, attackerAssistYViz = mapMetadata.TranslateScale(attackerX, attackerY)
+				attackerAssistXViz, attackerAssistYViz = mapMetadata.TranslateScale(attackerAssistX, attackerAssistY)
 				attackerAssistViewX = e.Assister.ViewDirectionX()
-				attackerAssistViewY = e.Assister.ViewDirectionY()
-				attackerAssistLoc := gonav.Vector3{X: float32(attackerAssistX), Y: float32(attackerAssistY), Z: float32(attackerAssistZ)}
-				attackerAssistArea := mesh.GetNearestArea(attackerAssistLoc, true)
-				if attackerAssistArea != nil {
-					if attackerAssistArea.Place != nil {
-						attackerAssistClosestAreaName = attackerAssistArea.Place.Name
-					}
-				}
 				if e.Assister.Team == 2 {
 					attackerAssistSideString = "T"
 				} else {
@@ -1051,14 +822,11 @@ func main() {
 			}
 
 			// Print a line of the kill information
-			fmt.Printf("[KILL] [%d] [%f, %f, %f, %f, %s] [%f, %f, %f, %f, %s] [%f, %f, %f, %f, %s] [%d, %s, %s] [%d, %s, %s] [%d, %s, %s] [%d, %d, %t, %t] \n",
-				gameTick,
-				VictimXViz, VictimYViz, VictimViewX, VictimViewY, VictimClosestAreaName,
-				attackerXViz, attackerYViz, attackerViewX, attackerViewY, attackerClosestAreaName,
-				attackerAssistXViz, attackerAssistYViz, attackerAssistViewX, attackerAssistViewY, attackerAssistClosestAreaName,
-				victimID, victimName, victimSideString,
-				attackerID, attackerName, attackerSideString,
-				attackerAssistID, attackerAssistName, attackerAssistSideString,
+			fmt.Printf("KILL, %d, %d, %d, %f, %f, %s, %s, %f, %d, %f, %f, %s, %s, %f, %d, %f, %f, %s, %s, %f, %d, %d, %t, %t \n",
+				gameTick, played_round,
+				victimID, VictimXViz, VictimYViz, victimName, victimSideString, VictimViewX,
+				attackerID, attackerXViz, attackerYViz, attackerName, attackerSideString, attackerViewX,
+				attackerAssistID, attackerAssistXViz, attackerAssistYViz, attackerAssistName, attackerAssistSideString, attackerAssistViewX,
 				weaponID, isWallshot, isFlashed, isHeadshot)
 		}
 	})
@@ -1086,9 +854,9 @@ func main() {
 			} else if e.Site == 66 {
 				bombSite = "B"
 			}
-			fmt.Printf("[BOMB] [%d] [%f, %f, %d, %s, %s, %s] \n",
-				gs.IngameTick(),
-				playerXViz, playerYViz, playerID, playerName, bombSite, "plant")
+			fmt.Printf("BOMB, %d, %d, %d, %f, %f, %s, %s, %s \n",
+				gs.IngameTick(), played_round,
+				playerID, playerXViz, playerYViz, playerName, bombSite, "plant")
 		}
 	})
 
@@ -1115,9 +883,9 @@ func main() {
 			} else if e.Site == 66 {
 				bombSite = "B"
 			}
-			fmt.Printf("[BOMB] [%d] [%f, %f, %d, %s, %s, %s] \n",
-				gs.IngameTick(),
-				playerXViz, playerYViz, playerID, playerName, bombSite, "explode")
+			fmt.Printf("BOMB, %d, %d, %d, %f, %f, %s, %s, %s \n",
+				gs.IngameTick(), played_round,
+				playerID, playerXViz, playerYViz, playerName, bombSite, "explode")
 		}
 	})
 	
@@ -1144,9 +912,9 @@ func main() {
 			} else if e.Site == 66 {
 				bombSite = "B"
 			}
-			fmt.Printf("[BOMB] [%d] [%f, %f, %d, %s, %s, %s] \n",
-				gs.IngameTick(),
-				playerXViz, playerYViz, playerID, playerName, bombSite, "defuse")
+			fmt.Printf("BOMB, %d, %d, %d, %f, %f, %s, %s, %s \n",
+				gs.IngameTick(), played_round,
+				playerID, playerXViz, playerYViz, playerName, bombSite, "defuse")
 		}
 	})
 	
@@ -1168,9 +936,9 @@ func main() {
 			playerName = e.Player.Name
 			playerXViz, playerYViz = mapMetadata.TranslateScale(e.Player.Position().X, e.Player.Position().Y)
 
-			fmt.Printf("[BOMB] [%d] [%f, %f, %d, %s, %s, %s] \n",
-				gs.IngameTick(),
-				playerXViz, playerYViz, playerID, playerName, bombSite, "pickup")
+			fmt.Printf("BOMB, %d, %d, %d, %f, %f, %s, %s, %s \n",
+				gs.IngameTick(), played_round,
+				playerID, playerXViz, playerYViz, playerName, bombSite, "pickup")
 		}
 	})
 	
@@ -1192,79 +960,11 @@ func main() {
 			playerName = e.Player.Name
 			playerXViz, playerYViz = mapMetadata.TranslateScale(e.Player.Position().X, e.Player.Position().Y)
 
-			fmt.Printf("[BOMB] [%d] [%f, %f, %d, %s, %s, %s] \n",
-				gs.IngameTick(),
-				playerXViz, playerYViz, playerID, playerName, bombSite, "drop")
+			fmt.Printf("BOMB, %d, %d, %d, %f, %f, %s, %s, %s] \n",
+				gs.IngameTick(), played_round,
+				playerID, playerXViz, playerYViz, playerName, bombSite, "drop")
 		}
 	})
-
-    /* 
-    p.RegisterEventHandler(func(e events.ItemPickup) {
-		// Parse match start events
-		warmup := p.GameState().IsWarmupPeriod()
-        
-		// Only parse non-warmup match starts
-		if (warmup == false) && (roundStarted == 1) {
-    		// First block (game state)
-			gameTick := p.GameState().IngameTick()
-			var mapName string = header.MapName
-			
-            // Second block (Player location)
-            var PlayerX float64 = 0.0
- 			var PlayerY float64 = 0.0
- 			var PlayerZ float64 = 0.0
- 			var PlayerXViz float64 = 0.0
- 			var PlayerYViz float64 = 0.0
- 			var PlayerClosestAreaID uint32 = 0
- 			var PlayerClosestAreaName string = "NA"
- 			var PlayerViewX float32 = 0.0
- 			var PlayerViewY float32 = 0.0
-			
-            // Third block (Player information)
-			var PlayerID uint64 = 0
-			var PlayerName string = "NA"
-			var PlayerTeam string = "NA"
-			var PlayerSide common.Team
-			var PlayerSideString string = "NA"
-			
-			weaponID := e.Weapon.Type
-			
-			// Find Player values
-			if e.Player == nil {
-				PlayerID = 0
-			} else {
-				PlayerID = e.Player.SteamID64
-				PlayerX = e.Player.Position().X
-				PlayerY = e.Player.Position().Y
-				PlayerZ = e.Player.Position().Z
-				PlayerXViz, PlayerYViz = mapMetadata.TranslateScale(PlayerX, PlayerY)
-				PlayerViewX = e.Player.ViewDirectionX()
-				PlayerViewY = e.Player.ViewDirectionY()
-				PlayerLoc := gonav.Vector3{X: float32(PlayerX), Y: float32(PlayerY), Z: float32(PlayerZ)}
-				PlayerArea := mesh.GetNearestArea(PlayerLoc, true)
-				if PlayerArea != nil {
-					PlayerClosestAreaID = PlayerArea.ID
-					if PlayerArea.Place != nil {
-						PlayerClosestAreaName = PlayerArea.Place.Name
-					}
-				}
-				PlayerName = e.Player.Name
-				PlayerTeam = e.Player.TeamState.ClanName()
-				PlayerSide = e.Player.Team
-				if PlayerSide == 2 {
-					PlayerSideString = "T"
-				} else if PlayerSide == 3 {
-					PlayerSideString = "CT"
-				}
-			}
-			// Print a line of the kill information
-			fmt.Printf("[ITEMPICKUP] [%s, %d] [%f, %f, %f, %f, %d, %s] [%d, %s, %s, %s, %d] \n",
-				mapName, gameTick,
-				PlayerXViz, PlayerYViz, PlayerViewX, PlayerViewY, PlayerClosestAreaID, PlayerClosestAreaName,
-				PlayerID, PlayerName, PlayerTeam, PlayerSideString, weaponID)
-		}
-	})
-    */	
 	
 	// Parse demofile to end
 	err = p.ParseToEnd()
