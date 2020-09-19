@@ -52,7 +52,7 @@ func main() {
 			
 			// what map are we playing? who is playing?
 			if (print_overallInfo == true){
-				fmt.Printf("INFO, %s, %s, %s \n", header.MapName, gs.TeamTerrorists().ClanName(), gs.TeamCounterTerrorists().ClanName())
+				fmt.Printf("STARTINFO, %s, %s, %s \n", header.MapName, gs.TeamTerrorists().ClanName(), gs.TeamCounterTerrorists().ClanName())
 				print_overallInfo = false
 			}
 			
@@ -118,7 +118,7 @@ func main() {
 			
 			// what map are we playing? who is playing?
 			if (print_overallInfo == true){
-				fmt.Printf("INFO, %s, %s, %s \n", header.MapName, p.GameState().TeamTerrorists().ClanName(), p.GameState().TeamCounterTerrorists().ClanName())
+				fmt.Printf("STARTINFO, %s, %s, %s \n", header.MapName, p.GameState().TeamTerrorists().ClanName(), p.GameState().TeamCounterTerrorists().ClanName())
 				print_overallInfo = false
 			}
 			
