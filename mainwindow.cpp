@@ -148,15 +148,37 @@ void MainWindow::on_actionOpen_Demo_triggered()
             animation2->setPosAt(i / 100.0, QPointF(meDDn[i][1], meDDn[i][2]));
         }
 
-        QTimeLine *timer = new QTimeLine(20000);
-        timer->setFrameRange(0, 100);
-        animation->setTimeLine(timer);
-        animation2->setTimeLine(timer);
-        timer->start();
+        this->timeline = new QTimeLine(20000);
+        this->timeline->setFrameRange(0, 100);
+        animation->setTimeLine(this->timeline);
+        animation2->setTimeLine(this->timeline);
+
 
         //QParallelAnimationGroup *group = new QParallelAnimationGroup;
         //group->addAnimation(animation);
 
 
+    }
+}
+
+
+
+void MainWindow::on_playButton_clicked()
+{
+    if(this->timeline != nullptr){
+        if(this->guard_timeline == false){
+            this->timeline->start();
+        }else{
+            this->timeline->setPaused(false);
+        }
+
+    }
+}
+
+void MainWindow::on_stopButton_clicked()
+{
+    if(this->timeline != nullptr){
+        this->timeline->setPaused(true);
+        this->guard_timeline = true;
     }
 }

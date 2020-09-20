@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QGraphicsScene>
+#include <QTimeLine>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -24,8 +25,14 @@ public:
 private slots:
     void on_actionOpen_Demo_triggered();
 
+    void on_playButton_clicked();
+
+    void on_stopButton_clicked();
+
 private:
     Ui::MainWindow *ui;
     QGraphicsScene *scene = nullptr;
+    QTimeLine *timeline = nullptr;
+    bool guard_timeline = false;
 };
 #endif // MAINWINDOW_H
