@@ -9,6 +9,9 @@
 
 class Player : public QObject, public QGraphicsItem
 {
+    Q_OBJECT
+    Q_PROPERTY(QPointF pos READ pos WRITE setPos)
+
 public:
     Player();
     virtual ~Player();

@@ -9,6 +9,7 @@
 #include <QGraphicsItemAnimation>
 #include <QTimeLine>
 #include <QPropertyAnimation>
+#include <QSequentialAnimationGroup>
 
 #include <player.h>
 
@@ -18,6 +19,8 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    this->scene = new QGraphicsScene();
+    ui->graphicsView->setScene(this->scene);    // Set grapihcs scene into graphicsView
 }
 
 MainWindow::~MainWindow()
@@ -112,8 +115,6 @@ void MainWindow::on_actionOpen_Demo_triggered()
         map = map.scaled(1024/this->mapRatio, 1024/this->mapRatio, Qt::KeepAspectRatio);
 
         // Add  graphics scene
-        this->scene = new QGraphicsScene();
-        ui->graphicsView->setScene(this->scene);    // Set grapihcs scene into graphicsView
         this->scene->addPixmap(map);                // Add Map
 
         ui->teamNameA->setText(this->teamNameA);
@@ -148,7 +149,7 @@ void MainWindow::on_actionOpen_Demo_triggered()
             animation2->setPosAt(i / 100.0, QPointF(meDDn[i][1], meDDn[i][2]));
         }
 
-        this->timeline = new QTimeLine(20000);
+        this->timeline = new QTimeLine(2000);
         this->timeline->setFrameRange(0, 100);
         animation->setTimeLine(this->timeline);
         animation2->setTimeLine(this->timeline);
@@ -173,6 +174,29 @@ void MainWindow::on_playButton_clicked()
         }
 
     }
+
+
+    Player* pTest = new Player();
+    pTest->set_color(QColor(255,128,0));
+    pTest->setPos(QPointF(0,0));
+    this->scene->addItem(pTest);
+
+    QPropertyAnimation *pPropAnimation = new QPropertyAnimation(pTest, "pos");
+    pPropAnimation->setDuration(2500);
+    pPropAnimation->setStartValue(QPointF(0, 0));
+    pPropAnimation->setEndValue(QPointF(500, 500));
+
+    QPropertyAnimation *pPropAnimation2 = new QPropertyAnimation(pTest, "pos");
+    pPropAnimation2->setDuration(2500);
+    pPropAnimation2->setStartValue(QPointF(500, 500));
+    pPropAnimation2->setEndValue(QPointF(0, 500));
+
+    QSequentialAnimationGroup* pAnimationContainer = new QSequentialAnimationGroup();
+
+    pAnimationContainer->addAnimation(pPropAnimation);
+    pAnimationContainer->addAnimation(pPropAnimation2);
+
+    pAnimationContainer->start();
 }
 
 void MainWindow::on_stopButton_clicked()
