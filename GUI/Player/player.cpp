@@ -19,23 +19,19 @@ QRectF Player::boundingRect() const
 void Player::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
 {
     // Body
-    painter->setBrush(m_color);
+    painter->setBrush(mColor);
     painter->drawEllipse(0, 0, 10, 10);
 
     // Name
     painter->setPen(Qt::white);
-    painter->drawText(QPoint(-6, -4), m_name);
-
-    // Viewdirection
-    //painter->setBrush(color);
-    //painter->drawLine(QPoint(0,0),QPoint());
+    painter->drawText(QPoint(-6, -4), mName);
 }
 
 
 void Player::set_color(QColor color){
-    this->m_color = color;
+    this->mColor = color;
 }
 
 void Player::set_name(QString name){
-   this->m_name = name;
+   this->mName = name;
 }

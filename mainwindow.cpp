@@ -6,24 +6,27 @@
 #include <QProcess>
 #include <QDebug>
 #include <QGraphicsEllipseItem>
-#include <QGraphicsItemAnimation>
 #include <QTimeLine>
 #include <QPropertyAnimation>
+#include <QParallelAnimationGroup>
+#include <QSequentialAnimationGroup>
+#include <QPauseAnimation>
 
-#include <player.h>
+#include <QStandardItemModel>
+#include <GUI\Player\player.h>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
     delete scene;
+    delete group;
 }
 
 
@@ -122,6 +125,9 @@ void MainWindow::on_actionOpen_Demo_triggered()
         qDebug() << round << endl;
 
 
+
+
+
         // animate test
         Player* playerPaxo = new Player();
         playerPaxo->set_color(QColor(0, 0, 255));
@@ -132,31 +138,35 @@ void MainWindow::on_actionOpen_Demo_triggered()
         Player* playerMeddn = new Player();
         playerMeddn->set_color(QColor(0, 0, 255));
         playerMeddn->set_name("meDDn");
-        playerMeddn->setPos(meDDn[0][1],meDDn[0][2]);
+        //playerMeddn->setPos(meDDn[0][1],meDDn[0][2]);
         this->scene->addItem(playerMeddn);
 
 
-        QGraphicsItemAnimation *animation = new QGraphicsItemAnimation;
-        animation->setItem(playerPaxo);
-        QGraphicsItemAnimation *animation2 = new QGraphicsItemAnimation;
-        animation2->setItem(playerMeddn);
+        QPropertyAnimation *pPropAnimation = new QPropertyAnimation(playerPaxo, "pos");
+        pPropAnimation->setDuration(10000);
+        pPropAnimation->setStartValue(QPointF(paxo[0][1], paxo[0][2]));
 
-        //int time = (paxo[160][0] - paxo[0][0]) /  128; // 128 tick = 1sek
+        QPropertyAnimation *pPropAnimation2 = new QPropertyAnimation(playerMeddn, "pos");
+        pPropAnimation2->setDuration(10000);
+        pPropAnimation2->setStartValue(QPointF(meDDn[0][1], meDDn[0][2]));
+
         for (int i = 0; i < 100; ++i){
             // tick, X, Y
-            animation->setPosAt(i / 100.0, QPointF(paxo[i][1], paxo[i][2]));
-            animation2->setPosAt(i / 100.0, QPointF(meDDn[i][1], meDDn[i][2]));
+            pPropAnimation->setKeyValueAt(i / 100.0, QPointF(paxo[i][1], paxo[i][2]));
+            pPropAnimation2->setKeyValueAt(i / 100.0, QPointF(meDDn[i][1], meDDn[i][2]));
         }
 
-        this->timeline = new QTimeLine(20000);
-        this->timeline->setFrameRange(0, 100);
-        animation->setTimeLine(this->timeline);
-        animation2->setTimeLine(this->timeline);
+        // Sequentiell
+        QSequentialAnimationGroup *sGroup = new QSequentialAnimationGroup();
+        QPauseAnimation *delay = new QPauseAnimation(2000, pPropAnimation2);
 
+        sGroup->addAnimation(delay);
+        sGroup->addAnimation(pPropAnimation2);
 
-        //QParallelAnimationGroup *group = new QParallelAnimationGroup;
-        //group->addAnimation(animation);
-
+        // Parallel
+        this->group = new QParallelAnimationGroup();
+        this->group->addAnimation(pPropAnimation);
+        this->group->addAnimation(sGroup);
 
     }
 }
@@ -165,11 +175,11 @@ void MainWindow::on_actionOpen_Demo_triggered()
 
 void MainWindow::on_playButton_clicked()
 {
-    if(this->timeline != nullptr){
-        if(this->guard_timeline == false){
-            this->timeline->start();
+    if(this->group != nullptr){
+        if(this->gAnimationStarted == false){
+            this->group->start();
         }else{
-            this->timeline->setPaused(false);
+            this->group->setPaused(false);
         }
 
     }
@@ -177,8 +187,8 @@ void MainWindow::on_playButton_clicked()
 
 void MainWindow::on_stopButton_clicked()
 {
-    if(this->timeline != nullptr){
-        this->timeline->setPaused(true);
-        this->guard_timeline = true;
+    if(this->group != nullptr){
+        this->group->setPaused(true);
+        this->gAnimationStarted = true;
     }
 }

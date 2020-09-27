@@ -16,11 +16,14 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    GUI/Player/player.cpp \
+    GUI/Player/playerinfocontainer.cpp \
     main.cpp \
-    mainwindow.cpp \
-    player.cpp
+    mainwindow.cpp
 
 HEADERS += \
+    GUI/Player/player.h \
+    GUI/Player/playerinfocontainer.h \
     mainwindow.h \
     player.h
 

@@ -9,6 +9,8 @@
 
 class Player : public QObject, public QGraphicsItem
 {
+    Q_OBJECT
+    Q_PROPERTY(QPointF pos READ pos WRITE setPos)
 public:
     Player();
     virtual ~Player();
@@ -21,8 +23,8 @@ public:
     void set_name(QString name);
 
 private:
-    QColor m_color;
-    QString m_name;
+    QColor mColor;
+    QString mName;
 };
 
 
