@@ -171,12 +171,14 @@ func main() {
                             playerMoney := player.Money()
                             playerHealth := player.Health()
                             playerArmor := player.Armor()
+							playerHelmet := player.HasHelmet()
+							playerKit := player.HasDefuseKit()
                             playerWeapon := player.ActiveWeapon()
                             
-                            fmt.Printf("PLAYER INFO, %d, %d, %d, %f, %f, %s, %s, %f, %d, %d, %d, %s \n", 
+                            fmt.Printf("PLAYER INFO, %d, %d, %d, %f, %f, %s, %s, %f, %d, %d, %d, %t, %t, %s \n", 
                                 gameTick, played_round,
                                 playerID, playerPosXViz, playerPosYViz, playerName, playerSideString, playerXView,
-                                playerMoney, playerHealth, playerArmor, playerWeapon)
+                                playerMoney, playerHealth, playerArmor, playerHelmet, playerKit,  playerWeapon)
                         }
                     }
                 }
@@ -239,12 +241,14 @@ func main() {
             playerMoney := e.Player.Money()
             playerHealth := e.Player.Health()
             playerArmor := e.Player.Armor()
+			playerHelmet := e.Player.HasHelmet()
+			playerKit := e.Player.HasDefuseKit()
             playerWeapon := e.Player.ActiveWeapon()
             
-    		fmt.Printf("PLAYER INFO, %d, %d, %d, %f, %f, %s, %s, %f, %d, %d, %d, %s \n", 
+    		fmt.Printf("PLAYER INFO, %d, %d, %d, %f, %f, %s, %s, %f, %d, %d, %d, %t, %t, %s \n", 
                 gameTick, played_round,
                 playerID, playerPosXViz, playerPosYViz, playerName, playerSideString, playerXView,
-                playerMoney, playerHealth, playerArmor, playerWeapon)
+                playerMoney, playerHealth, playerArmor, playerHelmet, playerKit, playerWeapon)
 		
 		}
 	})
@@ -315,12 +319,11 @@ func main() {
 
 			// Sixth block (Damage/Weapon)
 			hpDmg := e.HealthDamage
-			KillHpDmg := hpDmg
 
 			// If a player has more than 100 damage taken, squash this value back
 			//down to 100. This may need to be changed in the future. [NOTE]
 			if hpDmg > 100 {
-				KillHpDmg = 100
+				hpDmg = 100
 			}
 			armorDmg := e.ArmorDamage
 			weaponID := e.Weapon.Type
@@ -361,11 +364,11 @@ func main() {
 			}
 			
 			// Print a line of the damage information
-			fmt.Printf("DAMAGE, %d, %d, %d, %f, %f, %s, %s, %f, %d, %f, %f, %s, %s, %f, %d, %d, %d, %d, %d \n",
+			fmt.Printf("DAMAGE, %d, %d, %d, %f, %f, %s, %s, %f, %d, %f, %f, %s, %s, %f, %d, %d, %d, %d \n",
 				gameTick, played_round,
 				victimID, VictimXViz, VictimYViz, victimName, victimSideString, VictimViewX,
 				attackerID, attackerXViz, attackerYViz, attackerName, attackerSideString, attackerViewX,
-				hpDmg, KillHpDmg, armorDmg, weaponID, hitGroup)
+				hpDmg, armorDmg, weaponID, hitGroup)
 		}
 	})
 

@@ -13,7 +13,7 @@
 #include <QPauseAnimation>
 
 #include <QStandardItemModel>
-#include <GUI\Player\player.h>
+#include <GUI\Data\Player\player.h>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -41,11 +41,10 @@ void MainWindow::on_actionOpen_Demo_triggered()
         QProcess* process = new QProcess();
         int round = 0;
 
-        float paxo[165][3] = {};
-        float meDDn[165][3] = {};
+        Player* playerPaxo = new Player(123, "Paxo");
+        playerPaxo->setPlayerSide("CT");
 
-        int pj = 0;
-        int mj = 0;
+
         QObject::connect(process,&QProcess::readyRead,process,[&](){
             QString result = process->readAllStandardOutput();
             QStringList firstList = result.split("\n");
@@ -79,27 +78,21 @@ void MainWindow::on_actionOpen_Demo_triggered()
 
                 if (str.contains("PLAYER INFO")){
                     QStringList items = str.split(", ");
-                    // items[2] = roundnumber -> round 1
-                    if(items[2] == "1"){
+                    // items[2] = roundnumber -> round 2
+                    if(items[2] == "2"){
                         // items[6] = playername
                         if(items[6] == "Paxo"){
-                            paxo[pj][0] = items[1].toFloat(); // tick
-                            paxo[pj][1] = items[4].toFloat()/this->mapRatio; // X
-                            paxo[pj][2] = items[5].toFloat()/this->mapRatio; // Y
-                            pj = pj + 1;
-                        }
-                        if(items[6] == "meDDn"){
-                            meDDn[mj][0] = items[1].toFloat(); // tick
-                            meDDn[mj][1] = items[4].toFloat()/this->mapRatio; // X
-                            meDDn[mj][2] = items[5].toFloat()/this->mapRatio; // Y
-                            mj = mj + 1;
+                            bool helmet = false;
+                            bool kit = false;
+                            if (items[12] == "true") helmet = true;
+                            if (items[13] == "true") kit = true;
+                            playerPaxo->addPlayerInfo(items[1].toInt(), QPointF(items[4].toFloat()/this->mapRatio, items[5].toFloat()/this->mapRatio),
+                                                    items[8].toFloat(), items[9].toUShort(), items[10].toUShort(), items[11].toUShort(), helmet, kit, items[14]);
+
                         }
                     }
-                    //qDebug() << str << endl;
                 }
-
             }
-
         });
 
         // parse demofile
@@ -122,51 +115,13 @@ void MainWindow::on_actionOpen_Demo_triggered()
         ui->teamNameA->setText(this->teamNameA);
         ui->teamNameB->setText(this->teamNameB);
 
+
         qDebug() << round << endl;
 
-
-
-
-
-        // animate test
-        Player* playerPaxo = new Player();
-        playerPaxo->set_color(QColor(0, 0, 255));
-        playerPaxo->set_name("Paxo");
-        playerPaxo->setPos(QPoint(paxo[0][1],paxo[0][2]));
-        this->scene->addItem(playerPaxo);
-
-        Player* playerMeddn = new Player();
-        playerMeddn->set_color(QColor(0, 0, 255));
-        playerMeddn->set_name("meDDn");
-        //playerMeddn->setPos(meDDn[0][1],meDDn[0][2]);
-        this->scene->addItem(playerMeddn);
-
-
-        QPropertyAnimation *pPropAnimation = new QPropertyAnimation(playerPaxo, "pos");
-        pPropAnimation->setDuration(10000);
-        pPropAnimation->setStartValue(QPointF(paxo[0][1], paxo[0][2]));
-
-        QPropertyAnimation *pPropAnimation2 = new QPropertyAnimation(playerMeddn, "pos");
-        pPropAnimation2->setDuration(10000);
-        pPropAnimation2->setStartValue(QPointF(meDDn[0][1], meDDn[0][2]));
-
-        for (int i = 0; i < 100; ++i){
-            // tick, X, Y
-            pPropAnimation->setKeyValueAt(i / 100.0, QPointF(paxo[i][1], paxo[i][2]));
-            pPropAnimation2->setKeyValueAt(i / 100.0, QPointF(meDDn[i][1], meDDn[i][2]));
+        for(int i=0; i<playerPaxo->getListPlayerInfo().size(); i++){
+            qDebug() << playerPaxo->getListPlayerInfo().takeAt(i).getTick() << playerPaxo->getListPlayerInfo().takeAt(i).getArmor() << playerPaxo->getListPlayerInfo().takeAt(i).getHealth() << playerPaxo->getListPlayerInfo().takeAt(i).getPlayerPosition() << endl;
         }
 
-        // Sequentiell
-        QSequentialAnimationGroup *sGroup = new QSequentialAnimationGroup();
-        QPauseAnimation *delay = new QPauseAnimation(2000, pPropAnimation2);
-
-        sGroup->addAnimation(delay);
-        sGroup->addAnimation(pPropAnimation2);
-
-        // Parallel
-        this->group = new QParallelAnimationGroup();
-        this->group->addAnimation(pPropAnimation);
-        this->group->addAnimation(sGroup);
 
     }
 }
