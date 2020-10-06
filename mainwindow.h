@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QGraphicsScene>
 #include <QParallelAnimationGroup>
+#include <GUI\Data\match.h>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -32,6 +33,8 @@ private slots:
 private:
     Ui::MainWindow *ui;
     QGraphicsScene *scene = nullptr;
+    Match *pMatch = nullptr;
+
     QParallelAnimationGroup *group = nullptr;
     bool gAnimationStarted = false;
 };

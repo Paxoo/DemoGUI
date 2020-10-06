@@ -39,7 +39,7 @@ func main() {
     frame_count := 0
     roundStarted := 0
     freezetimeOver := false
-	print_overallInfo := true
+	printMatchInfo := true
     
 	p.RegisterEventHandler(func(e events.RoundStart) {
 		// Parse round start events
@@ -50,10 +50,25 @@ func main() {
 		if (warmup == false) && (roundStarted == 0) {
 			played_round = played_round + 1
 			
+			var teamA string = ""
+			var teamB string = ""
+			var id string = ""
+			
 			// what map are we playing? who is playing?
-			if (print_overallInfo == true){
-				fmt.Printf("STARTINFO, %s, %s, %s \n", header.MapName, gs.TeamTerrorists().ClanName(), gs.TeamCounterTerrorists().ClanName())
-				print_overallInfo = false
+			if (printMatchInfo == true){
+				// we need to iterate over all playing players because observer and GOTV can be flashed aswell...
+    			// we get playing Players in event roundstart
+    			for _, value := range p.GameState().Participants().Playing() {
+					if (value.Team == 2){
+						id = fmt.Sprintf("%d", value.SteamID64) 
+						teamA = teamA + id + ", "
+					}else if (value.Team == 3){
+						id = fmt.Sprintf("%d", value.SteamID64) 
+						teamB = teamB + id + ", "
+					}
+				}
+				fmt.Printf("MATCHINFO, %s, %s%s \n", header.MapName, teamA, teamB)
+				printMatchInfo = false
 			}
 			
 			fmt.Printf("ROUND START, %d, %d \n", gs.IngameTick(), played_round)
@@ -83,14 +98,14 @@ func main() {
 			switch e.Winner {
 			case common.TeamTerrorists:
 				// Winner's score + 1 because it hasn't actually been updated yet
-				fmt.Printf("ROUND END, %d, %d, %d, %d, T, %s, %s, %d \n", gs.IngameTick(), played_round, gs.TeamTerrorists().Score()+1, gs.TeamCounterTerrorists().Score(), gs.TeamTerrorists().ClanName(), gs.TeamCounterTerrorists().ClanName(), e.Reason)
+				fmt.Printf("ROUNDEND, %d, %d, %d, %d, T, %s, %s, %d \n", gs.IngameTick(), played_round, gs.TeamTerrorists().Score()+1, gs.TeamCounterTerrorists().Score(), gs.TeamTerrorists().ClanName(), gs.TeamCounterTerrorists().ClanName(), e.Reason)
 			case common.TeamCounterTerrorists:
-				fmt.Printf("ROUND END, %d, %d, %d, %d, CT, %s, %s, %d \n", gs.IngameTick(), played_round, gs.TeamTerrorists().Score(), gs.TeamCounterTerrorists().Score()+1, gs.TeamCounterTerrorists().ClanName(), gs.TeamTerrorists().ClanName(), e.Reason)
+				fmt.Printf("ROUNDEND, %d, %d, %d, %d, CT, %s, %s, %d \n", gs.IngameTick(), played_round, gs.TeamTerrorists().Score(), gs.TeamCounterTerrorists().Score()+1, gs.TeamTerrorists().ClanName(), gs.TeamCounterTerrorists().ClanName(), e.Reason)
 			default:
 				/* It is currently unknown why rounds may end as draws. Markuswa
 				suggested that it may be due to match medic. [NOTE]
 				*/
-				fmt.Printf("ROUND END, %d, %d, DRAW \n", gs.IngameTick(), played_round)
+				fmt.Printf("ROUNDEND, %d, %d, DRAW \n", gs.IngameTick(), played_round)
 			}
             roundStarted = 0
             freezetimeOver = false
@@ -116,10 +131,25 @@ func main() {
 		if warmup == false {
 			played_round = played_round + 1
 			
+			var teamA string = ""
+			var teamB string = ""
+			var id string = ""
+			
 			// what map are we playing? who is playing?
-			if (print_overallInfo == true){
-				fmt.Printf("STARTINFO, %s, %s, %s \n", header.MapName, p.GameState().TeamTerrorists().ClanName(), p.GameState().TeamCounterTerrorists().ClanName())
-				print_overallInfo = false
+			if (printMatchInfo == true){
+				// we need to iterate over all playing players because observer and GOTV can be flashed aswell...
+    			// we get playing Players in event roundstart
+    			for _, value := range p.GameState().Participants().Playing() {
+					if (value.Team == 2){
+						id = fmt.Sprintf("%d", value.SteamID64) 
+						teamA = teamA + id + ", "
+					}else if (value.Team == 3){
+						id = fmt.Sprintf("%d", value.SteamID64) 
+						teamB = teamB + id + ", "
+					}
+				}
+				fmt.Printf("MATCHINFO, %s, %s%s \n", header.MapName, teamA, teamB)
+				printMatchInfo = false
 			}
 			
 			fmt.Printf("MATCH START, %d, %d] \n", p.GameState().IngameTick(), played_round)

@@ -13,19 +13,22 @@
 #include <QPauseAnimation>
 
 #include <QStandardItemModel>
-#include <GUI\Data\Player\player.h>
+#include <GUI\Data\match.h>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
     delete scene;
+    delete pMatch;
     delete group;
 }
 
@@ -41,55 +44,54 @@ void MainWindow::on_actionOpen_Demo_triggered()
         QProcess* process = new QProcess();
         int round = 0;
 
-        Player* playerPaxo = new Player(123, "Paxo");
-        playerPaxo->setPlayerSide("CT");
-
-
         QObject::connect(process,&QProcess::readyRead,process,[&](){
             QString result = process->readAllStandardOutput();
             QStringList firstList = result.split("\n");
 
             foreach (const QString &str, firstList) {
-                if (str.contains("STARTINFO")){
+                if (str.contains("MATCHINFO")){
                     QStringList items = str.split(", ");
                     this->mapName = items[1];
 
-                    // Get Teamname A
-                    if (items[2].contains("[READY]")){
-                        QStringList name = items[2].split("READY] ");
-                        this->teamNameA = name[1];
-                    }else{
-                        this->teamNameA = items[2];
+                    QList<QString> playerIDs;
+                    for(short i = 2; i < (items.size()-1); i++){
+                        playerIDs.append(items[i]);
                     }
+                    qDebug() << playerIDs << endl;
+                    this->pMatch = new Match(playerIDs);
 
-                    // Get Teamname B
-                    if (items[3].contains("[READY]")){
-                        QStringList name = items[3].split("READY] ");
-                        this->teamNameB = name[1];
-                    }else{
-                        this->teamNameB = items[3];
-                    }
                 }
 
                 if (str.contains("ROUND START")){
                     //qDebug() << str << endl;
                     round = round + 1;
+                    this->pMatch->addRound();
                 }
+
+                if (str.contains("ROUNDEND")){
+                    QStringList items = str.split(", ");
+
+                    this->teamNameA = items[6];
+                    this->teamNameB = items[7];
+
+                }
+
 
                 if (str.contains("PLAYER INFO")){
                     QStringList items = str.split(", ");
+
                     // items[2] = roundnumber -> round 2
-                    if(items[2] == "2"){
+                    if(items[2] == "5"){
                         // items[6] = playername
-                        if(items[6] == "Paxo"){
+                        /*if(items[6] == "Paxo"){
                             bool helmet = false;
                             bool kit = false;
                             if (items[12] == "true") helmet = true;
                             if (items[13] == "true") kit = true;
-                            playerPaxo->addPlayerInfo(items[1].toInt(), QPointF(items[4].toFloat()/this->mapRatio, items[5].toFloat()/this->mapRatio),
+                            players.first().addPlayerInfo(items[1].toInt(), QPointF(items[4].toFloat()/this->mapRatio, items[5].toFloat()/this->mapRatio),
                                                     items[8].toFloat(), items[9].toUShort(), items[10].toUShort(), items[11].toUShort(), helmet, kit, items[14]);
 
-                        }
+                        }*/
                     }
                 }
             }
@@ -117,10 +119,13 @@ void MainWindow::on_actionOpen_Demo_triggered()
 
 
         qDebug() << round << endl;
+        qDebug() << this->pMatch->getRounds().size() << endl;
+        qDebug() << this->pMatch->getRounds().last().getListPlayer().size() << endl;
 
-        for(int i=0; i<playerPaxo->getListPlayerInfo().size(); i++){
-            qDebug() << playerPaxo->getListPlayerInfo().takeAt(i).getTick() << playerPaxo->getListPlayerInfo().takeAt(i).getArmor() << playerPaxo->getListPlayerInfo().takeAt(i).getHealth() << playerPaxo->getListPlayerInfo().takeAt(i).getPlayerPosition() << endl;
-        }
+        /*for(int i=0; i<players.first().getListPlayerInfo().size(); i++){
+            qDebug() << players.first().getListPlayerInfo().takeAt(i).getTick() << players.first().getListPlayerInfo().takeAt(i).getActiveWeapon() << endl;
+        }*/
+
 
 
     }

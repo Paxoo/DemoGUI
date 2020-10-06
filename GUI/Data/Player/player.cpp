@@ -1,8 +1,12 @@
 #include "player.h"
 
-Player::Player(unsigned long id, QString name)
+Player::Player(QString id)
 {
     this->mID = id;
+}
+
+void Player::setName(QString name)
+{
     this->mName = name;
 }
 
@@ -40,7 +44,7 @@ void Player::incrementUtilityDMG(unsigned short dmg)
     this->mUtilityDMG = this->mUtilityDMG + dmg;
 }
 
-ulong Player::getID()
+QString Player::getID()
 {
     return this->mID;
 }

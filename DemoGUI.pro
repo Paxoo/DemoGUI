@@ -19,6 +19,8 @@ SOURCES += \
     GUI/Data/Player/player.cpp \
     GUI/Data/Player/playerInfo.cpp \
     GUI/Data/Player/playerStats.cpp \
+    GUI/Data/match.cpp \
+    GUI/Data/round.cpp \
     main.cpp \
     mainwindow.cpp
 
@@ -26,6 +28,8 @@ HEADERS += \
     GUI/Data/Player/player.h \
     GUI/Data/Player/playerInfo.h \
     GUI/Data/Player/playerStats.h \
+    GUI/Data/match.h \
+    GUI/Data/round.h \
     mainwindow.h \
 
 FORMS += \

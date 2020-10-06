@@ -11,8 +11,9 @@
 class Player
 {
 public:
-    Player(unsigned long id, QString name);
+    Player(QString id);
 
+    void setName(QString name);
     void setPlayerSide(QString playerSide);
     void incrementKills();
     void incrementAssists();
@@ -21,7 +22,7 @@ public:
     void incrementTeamFlahes();
     void incrementUtilityDMG(unsigned short dmg);
 
-    ulong getID();
+    QString getID();
     QString getName();
     QString getPlayerSide();
     ushort getKills();
@@ -35,7 +36,7 @@ public:
     QList<PlayerInfo> getListPlayerInfo();
 
 private:
-    ulong mID;
+    QString mID;
     QString mName;
     QString mPlayerSide;
     ushort mKills;
