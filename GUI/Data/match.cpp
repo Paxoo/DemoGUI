@@ -1,7 +1,19 @@
 #include "match.h"
 
 
-Match::Match(QList<QString> listPlayerIDs)
+Match::Match()
+{
+
+}
+
+Match::~Match()
+{
+    if(!this->mListRounds.empty()){
+        this->mListRounds.clear();
+    }
+}
+
+void Match::setPlayers(QList<QString> listPlayerIDs)
 {
     this->mListPlayerIDs = listPlayerIDs;
 }
@@ -38,11 +50,10 @@ QString Match::getTeamNameB()
 
 void Match::addRound()
 {
-    Round round(this->mListPlayerIDs);
-    this->mListRounds.append(round);
+    this->mListRounds.append(QSharedPointer<Round>(new Round(this->mListPlayerIDs)));
 }
 
-QList<Round> Match::getRounds()
+QList<QSharedPointer<Round>> Match::getRounds()
 {
     return this->mListRounds;
 }

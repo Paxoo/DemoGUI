@@ -9,40 +9,42 @@ class Round
 public:
     Round(QList<QString> &ids);
 
-    void setRoundTicks(ushort startTick, ushort freezeEndTick, ushort endTick, QString reasonRoundEnd);
-    void setTstats(ushort startTscore, ushort tmoneySpentTotal, ushort tmoneySpentRound, QString tfreezetimeEndEquipValue);
-    void setCTstats(ushort startCTscore, ushort ctmoneySpentTotal, ushort ctmoneySpentRound, QString ctfreezetimeEndEquipValue);
+    void setRoundStartStats(uint32_t startTick, ushort startTscore, ushort startCTscore);
+    void setFreezeEndTick(uint32_t freezeEndTick);
+    void setEndTick(uint32_t endTick);
+    void setRoundPurchase(uint32_t tmoneySpentTotal, ushort tmoneySpentRound, QString tfreezetimeEndEquipValue, uint32_t ctmoneySpentTotal, ushort ctmoneySpentRound, QString ctfreezetimeEndEquipValue);
+    void setRoundEndStats(QString reasonRoundEnd);
 
-    ushort getStartTick();
-    ushort getFreezeEndTick();
-    ushort getEndTick();
+    uint32_t getStartTick();
+    uint32_t getFreezeEndTick();
+    uint32_t getEndTick();
     QString getReasonRoundEnd();
     ushort getStartTscore();
     ushort getStartCTscore();
-    ushort getTmoneySpentTotal();
+    uint32_t getTmoneySpentTotal();
     ushort getTmoneySpentRound();
     QString getTfreezetimeEndEquipValue();
-    ushort getCTmoneySpentTotal();
+    uint32_t getCTmoneySpentTotal();
     ushort getCTmoneySpentRound();
     QString getCTfreezetimeEndEquipValue();
 
     QList<Player> getListPlayer();
 
 private:
-    ushort mStartTick;
-    ushort mFreezeEndTick;
-    ushort mEndTick;
-    QString mReasonRoundEnd;
+    uint32_t mStartTick = 0;
+    uint32_t mFreezeEndTick = 0;
+    uint32_t mEndTick = 0;
+    QString mReasonRoundEnd = "";
 
-    ushort mStartTscore;
-    ushort mStartCTscore;
+    ushort mStartTscore = 0;
+    ushort mStartCTscore = 0;
 
-    ushort mTmoneySpentTotal;
-    ushort mTmoneySpentRound;
-    QString mTfreezetimeEndEquipValue;
-    ushort mCTmoneySpentTotal;
-    ushort mCTmoneySpentRound;
-    QString mCTfreezetimeEndEquipValue;
+    uint32_t mTmoneySpentTotal = 0;
+    ushort mTmoneySpentRound = 0;
+    QString mTfreezetimeEndEquipValue = "";
+    uint32_t mCTmoneySpentTotal = 0;
+    ushort mCTmoneySpentRound = 0;
+    QString mCTfreezetimeEndEquipValue = "";
 
     QList<Player> mListPlayer;
 };

@@ -7,8 +7,10 @@
 class Match
 {
 public:
-    Match(QList<QString> listPlayerIDs);
+    Match();
+    ~Match();
 
+    void setPlayers(QList<QString> listPlayerIDs);
     void setMap(QString map);
     void setTeamNameA(QString teamNameA);
     void setTeamNameB(QString teamNameB);
@@ -18,14 +20,14 @@ public:
     QString getTeamNameB();
 
     void addRound();
-    QList<Round> getRounds();
+    QList<QSharedPointer<Round>> getRounds();
 
 private:
     QString mMap;
     QString mTeamNameA;
     QString mTeamNameB;
 
-    QList<Round> mListRounds;
+    QList<QSharedPointer<Round>> mListRounds;
     QList<QString> mListPlayerIDs;
 };
 

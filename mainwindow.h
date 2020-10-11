@@ -15,10 +15,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    QString mapName = "";
     float mapRatio = 1.285; // 1024 / 800 = 1.28
-    QString teamNameA = "";
-    QString teamNameB = "";
 
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();

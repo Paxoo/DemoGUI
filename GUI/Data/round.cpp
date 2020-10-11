@@ -9,41 +9,49 @@ Round::Round(QList<QString> &ids)
     }
 }
 
-void Round::setRoundTicks(ushort startTick, ushort freezeEndTick, ushort endTick, QString reasonRoundEnd)
+void Round::setRoundStartStats(uint32_t startTick, ushort startTscore, ushort startCTscore)
 {
     this->mStartTick = startTick;
-    this->mFreezeEndTick = freezeEndTick;
-    this->mEndTick = endTick;
-    this->mReasonRoundEnd = reasonRoundEnd;
+    this->mStartTscore = startTscore;
+    this->mStartCTscore = startCTscore;
 }
 
-void Round::setTstats(ushort startTscore, ushort tmoneySpentTotal, ushort tmoneySpentRound, QString tfreezetimeEndEquipValue)
+void Round::setFreezeEndTick(uint32_t freezeEndTick)
 {
-    this->mStartTscore = startTscore;
+    this->mFreezeEndTick = freezeEndTick;
+}
+
+void Round::setEndTick(uint32_t endTick)
+{
+    this->mEndTick = endTick;
+}
+
+void Round::setRoundPurchase(uint32_t tmoneySpentTotal, ushort tmoneySpentRound, QString tfreezetimeEndEquipValue, uint32_t ctmoneySpentTotal, ushort ctmoneySpentRound, QString ctfreezetimeEndEquipValue)
+{
     this->mTmoneySpentTotal = tmoneySpentTotal;
     this->mTmoneySpentRound = tmoneySpentRound;
     this->mTfreezetimeEndEquipValue = tfreezetimeEndEquipValue;
-}
-
-void Round::setCTstats(ushort startCTscore, ushort ctmoneySpentTotal, ushort ctmoneySpentRound, QString ctfreezetimeEndEquipValue)
-{
-    this->mStartCTscore = startCTscore;
     this->mCTmoneySpentTotal = ctmoneySpentTotal;
     this->mCTmoneySpentRound = ctmoneySpentRound;
     this->mCTfreezetimeEndEquipValue = ctfreezetimeEndEquipValue;
 }
 
-ushort Round::getStartTick()
+void Round::setRoundEndStats(QString reasonRoundEnd)
+{
+    this->mReasonRoundEnd = reasonRoundEnd;
+}
+
+uint32_t Round::getStartTick()
 {
     return this->mStartTick;
 }
 
-ushort Round::getFreezeEndTick()
+uint32_t Round::getFreezeEndTick()
 {
     return this->mFreezeEndTick;
 }
 
-ushort Round::getEndTick()
+uint32_t Round::getEndTick()
 {
     return this->mEndTick;
 }
@@ -63,7 +71,7 @@ ushort Round::getStartCTscore()
     return this->mStartCTscore;
 }
 
-ushort Round::getTmoneySpentTotal()
+uint32_t Round::getTmoneySpentTotal()
 {
     return this->mTmoneySpentTotal;
 }
@@ -78,7 +86,7 @@ QString Round::getTfreezetimeEndEquipValue()
     return this->mTfreezetimeEndEquipValue;
 }
 
-ushort Round::getCTmoneySpentTotal()
+uint32_t Round::getCTmoneySpentTotal()
 {
     return this->mCTmoneySpentTotal;
 }

@@ -71,7 +71,7 @@ func main() {
 				printMatchInfo = false
 			}
 			
-			fmt.Printf("ROUND START, %d, %d \n", gs.IngameTick(), played_round)
+			fmt.Printf("ROUND START, %d, %d, %d, %d \n", gs.IngameTick(), played_round, gs.TeamTerrorists().Score(), gs.TeamCounterTerrorists().Score())
     		roundStarted = 1
     	}
 	})
@@ -111,7 +111,7 @@ func main() {
             freezetimeOver = false
 		}
 	})
-
+	
 	p.RegisterEventHandler(func(e events.RoundEndOfficial) {
 		// Parse official round end
 		warmup := p.GameState().IsWarmupPeriod()
@@ -152,7 +152,7 @@ func main() {
 				printMatchInfo = false
 			}
 			
-			fmt.Printf("MATCH START, %d, %d] \n", p.GameState().IngameTick(), played_round)
+			fmt.Printf("MATCH START, %d, %d, %d, %d \n", p.GameState().IngameTick(), played_round, p.GameState().TeamTerrorists().Score(), p.GameState().TeamCounterTerrorists().Score())
 			roundStarted = 1
 		}
 	})
