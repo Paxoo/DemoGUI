@@ -104,7 +104,7 @@ void Parser::runParser(QString fileName)
 
 QString Parser::calculateEquipValue(ushort value, QString round)
 {
-    if(round == "1" or round == "2"){
+    if(round == "1" or round == "16"){
         return "Pistol";
     }
 
@@ -124,7 +124,7 @@ QString Parser::calculateEquipValue(ushort value, QString round)
 
     // Full Buy
     if(value >= 22000){
-        return "Half Buy";
+        return "Full Buy";
     }
 
     return "NA";
