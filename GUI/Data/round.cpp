@@ -4,8 +4,7 @@
 Round::Round(QList<QString> &ids)
 {
     for(short i=0; i < ids.size(); i++){
-        Player player(ids.at(i));
-        this->mListPlayer.append(player);
+        this->mListPlayer.append(QSharedPointer<Player>(new Player(ids.at(i))));
     }
 }
 
@@ -101,7 +100,7 @@ QString Round::getCTfreezetimeEndEquipValue()
     return this->mCTfreezetimeEndEquipValue;
 }
 
-QList<Player> Round::getListPlayer()
+QList<QSharedPointer<Player>> Round::getListPlayer()
 {
     return this->mListPlayer;
 }

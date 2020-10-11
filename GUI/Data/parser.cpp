@@ -70,25 +70,46 @@ Parser::Parser(Match &match, float mapRatio)
                 match.getRounds().last()->setRoundPurchase(items[4].toUInt(), items[5].toUShort(), tValue, items[8].toUInt(), items[9].toUShort(), ctValue);
             }
 
-            /*if (str.contains("PLAYER INFO")){
+            if (str.contains("PLAYER INFO")){
                 QStringList items = str.split(", ");
 
-                // items[2] = roundnumber -> round 2
-                if(items[2] == "5"){
-                    // items[6] = playername
-                    if(items[6] == "Paxo"){
-                        bool helmet = false;
+                for(int i=0; i<match.getRounds().last()->getListPlayer().size(); i++){
+                    if(match.getRounds().last()->getListPlayer().at(i)->getID() == items[3]){
+                        match.getRounds().last()->getListPlayer().at(i)->setName(items[6]);
+                        match.getRounds().last()->getListPlayer().at(i)->setPlayerSide(items[7]);
+
+                        /*bool helmet = false;
                         bool kit = false;
                         if (items[12] == "true") helmet = true;
                         if (items[13] == "true") kit = true;
-
-                        qDebug() << "ja" << endl;
-                        match.getRounds().first().getListPlayer().first().addPlayerInfo(items[1].toInt(), QPointF(items[4].toFloat()/mapRatio, items[5].toFloat()/mapRatio),
-                                                items[8].toFloat(), items[9].toUShort(), items[10].toUShort(), items[11].toUShort(), helmet, kit, items[14]);
-
+                        match.getRounds().last()->getListPlayer().at(i)->addPlayerInfo(items[1].toInt(),
+                                QPointF(items[4].toFloat()/mapRatio, items[5].toFloat()/mapRatio),
+                                items[8].toFloat(), items[9].toUShort(), items[10].toUShort(), items[11].toUShort(), helmet, kit, items[14]);*/
                     }
                 }
-            }*/
+            }
+
+            if (str.contains("TEAMFLASHED")){
+                items = str.split(", ");
+
+                for(int i=0; i<match.getRounds().last()->getListPlayer().size(); i++){
+                    if(match.getRounds().last()->getListPlayer().at(i)->getID() == items[3]){
+                        match.getRounds().last()->getListPlayer().at(i)->incrementTeamFlahes();
+                    }
+                }
+            }
+
+            if (str.contains("ENEMIESFLASHED")){
+                items = str.split(", ");
+
+                for(int i=0; i<match.getRounds().last()->getListPlayer().size(); i++){
+                    if(match.getRounds().last()->getListPlayer().at(i)->getID() == items[3]){
+                        match.getRounds().last()->getListPlayer().at(i)->incrementEnemyFlashes();
+                    }
+                }
+            }
+
+
         }
     });
 }

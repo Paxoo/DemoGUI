@@ -28,7 +28,7 @@ public:
     ushort getCTmoneySpentRound();
     QString getCTfreezetimeEndEquipValue();
 
-    QList<Player> getListPlayer();
+    QList<QSharedPointer<Player>> getListPlayer();
 
 private:
     uint32_t mStartTick = 0;
@@ -46,7 +46,7 @@ private:
     ushort mCTmoneySpentRound = 0;
     QString mCTfreezetimeEndEquipValue = "";
 
-    QList<Player> mListPlayer;
+    QList<QSharedPointer<Player>> mListPlayer;
 };
 
 #endif // ROUND_H

@@ -36,15 +36,15 @@ public:
     QList<PlayerInfo> getListPlayerInfo();
 
 private:
-    QString mID;
-    QString mName;
-    QString mPlayerSide;
-    ushort mKills;
-    ushort mAssists;
-    ushort mDeaths;
-    ushort mEnemyFlashes;
-    ushort mTeamFlashes;
-    ushort mUtilityDMG;
+    QString mID = "";
+    QString mName= "";
+    QString mPlayerSide = "";
+    ushort mKills = 0;
+    ushort mAssists = 0;
+    ushort mDeaths = 0;
+    ushort mEnemyFlashes = 0;
+    ushort mTeamFlashes = 0;
+    ushort mUtilityDMG = 0;
 
     QList<PlayerInfo> mListPlayerInfo;
 };

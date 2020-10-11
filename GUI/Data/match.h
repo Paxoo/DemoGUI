@@ -23,9 +23,9 @@ public:
     QList<QSharedPointer<Round>> getRounds();
 
 private:
-    QString mMap;
-    QString mTeamNameA;
-    QString mTeamNameB;
+    QString mMap = "";
+    QString mTeamNameA = "";
+    QString mTeamNameB = "";
 
     QList<QSharedPointer<Round>> mListRounds;
     QList<QString> mListPlayerIDs;

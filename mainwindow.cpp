@@ -63,20 +63,44 @@ void MainWindow::on_actionOpen_Demo_triggered()
         //qDebug() << round << endl;
         qDebug() << this->pMatch->getRounds().size() << endl;
 
+
+        int eflashes = 0;
+        int tflashes = 0;
         for (int i=0; i < this->pMatch->getRounds().size(); i++){
-            qDebug() << this->pMatch->getRounds().takeAt(i)->getStartTick()
-                     << this->pMatch->getRounds().takeAt(i)->getFreezeEndTick()
-                     << this->pMatch->getRounds().takeAt(i)->getEndTick()
-                     << this->pMatch->getRounds().takeAt(i)->getStartTscore() << this->pMatch->getRounds().takeAt(i)->getStartCTscore()
-                     << this->pMatch->getRounds().takeAt(i)->getReasonRoundEnd() << endl;
-            qDebug() << this->pMatch->getRounds().takeAt(i)->getTmoneySpentTotal() << this->pMatch->getRounds().takeAt(i)->getTmoneySpentRound() << this->pMatch->getRounds().takeAt(i)->getTfreezetimeEndEquipValue() << endl;
-            qDebug() << this->pMatch->getRounds().takeAt(i)->getCTmoneySpentTotal() << this->pMatch->getRounds().takeAt(i)->getCTmoneySpentRound() << this->pMatch->getRounds().takeAt(i)->getCTfreezetimeEndEquipValue() << endl;
+            qDebug() << "--- --- Round" << i+1 << endl;
+            qDebug() << this->pMatch->getRounds().at(i)->getStartTick()
+                     << this->pMatch->getRounds().at(i)->getFreezeEndTick()
+                     << this->pMatch->getRounds().at(i)->getEndTick()
+                     << this->pMatch->getRounds().at(i)->getStartTscore() << this->pMatch->getRounds().at(i)->getStartCTscore()
+                     << this->pMatch->getRounds().at(i)->getReasonRoundEnd() << endl;
+            qDebug() << this->pMatch->getRounds().at(i)->getTmoneySpentTotal() << this->pMatch->getRounds().at(i)->getTmoneySpentRound() << this->pMatch->getRounds().at(i)->getTfreezetimeEndEquipValue() << endl;
+            qDebug() << this->pMatch->getRounds().at(i)->getCTmoneySpentTotal() << this->pMatch->getRounds().at(i)->getCTmoneySpentRound() << this->pMatch->getRounds().at(i)->getCTfreezetimeEndEquipValue() << endl;
+
+            qDebug() << "--- Player ---" << this->pMatch->getRounds().at(i)->getListPlayer().size() << endl;
+            for(int j=0; j < this->pMatch->getRounds().at(i)->getListPlayer().size(); j++){
+                if(this->pMatch->getRounds().at(i)->getListPlayer().at(j)->getID() == "76561197968320879"){
+                    qDebug() << this->pMatch->getRounds().at(i)->getListPlayer().at(j)->getID()
+                             << this->pMatch->getRounds().at(i)->getListPlayer().at(j)->getName()
+                             << this->pMatch->getRounds().at(i)->getListPlayer().at(j)->getPlayerSide()
+                             << this->pMatch->getRounds().at(i)->getListPlayer().at(j)->getEnemyFlashes()
+                             << endl;
+                    eflashes = eflashes + this->pMatch->getRounds().at(i)->getListPlayer().at(j)->getEnemyFlashes();
+                    tflashes = tflashes + this->pMatch->getRounds().at(i)->getListPlayer().at(j)->getTeamFlahes();
+
+                    /*qDebug() << this->pMatch->getRounds().at(i)->getListPlayer().last()->getListPlayerInfo().at(i).getTick()
+                             << this->pMatch->getRounds().at(i)->getListPlayer().last()->getListPlayerInfo().at(i).getHealth()
+                             << this->pMatch->getRounds().at(i)->getListPlayer().last()->getListPlayerInfo().at(i).getArmor()
+                             << this->pMatch->getRounds().at(i)->getListPlayer().last()->getListPlayerInfo().at(i).getActiveWeapon()
+                             << this->pMatch->getRounds().at(i)->getListPlayer().last()->getListPlayerInfo().at(i).getPlayerPosition() << endl;*/
+                }
+            }
         }
 
+        qDebug() << eflashes << tflashes << endl;
 
 
         /*for(int i=0; i<this->pMatch->getRounds().first().getListPlayer().first().getListPlayerInfo().size(); i++){
-            qDebug() << this->pMatch->getRounds().first().getListPlayer().first().getListPlayerInfo().takeAt(i).getTick() << this->pMatch->getRounds().last().getListPlayer().first().getListPlayerInfo().takeAt(i).getActiveWeapon() << endl;
+            qDebug() << this->pMatch->getRounds().first().getListPlayer().first().getListPlayerInfo().at(i).getTick() << this->pMatch->getRounds().last().getListPlayer().first().getListPlayerInfo().at(i).getActiveWeapon() << endl;
         }*/
 
     }
