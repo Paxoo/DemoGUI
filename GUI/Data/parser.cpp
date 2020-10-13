@@ -78,13 +78,13 @@ Parser::Parser(Match &match, float mapRatio)
                         match.getRounds().last()->getListPlayer().at(i)->setName(items[6]);
                         match.getRounds().last()->getListPlayer().at(i)->setPlayerSide(items[7]);
 
-                        /*bool helmet = false;
+                        bool helmet = false;
                         bool kit = false;
                         if (items[12] == "true") helmet = true;
                         if (items[13] == "true") kit = true;
                         match.getRounds().last()->getListPlayer().at(i)->addPlayerInfo(items[1].toInt(),
                                 QPointF(items[4].toFloat()/mapRatio, items[5].toFloat()/mapRatio),
-                                items[8].toFloat(), items[9].toUShort(), items[10].toUShort(), items[11].toUShort(), helmet, kit, items[14]);*/
+                                items[8].toFloat(), items[9].toUShort(), items[10].toUShort(), items[11].toUShort(), helmet, kit, items[14]);
                     }
                 }
             }
@@ -109,7 +109,42 @@ Parser::Parser(Match &match, float mapRatio)
                 }
             }
 
+            if (str.contains("KILL")){
+                items = str.split(", ");
 
+                for(int i=0; i<match.getRounds().last()->getListPlayer().size(); i++){
+                    // Attacker
+                    if(match.getRounds().last()->getListPlayer().at(i)->getID() == items[9] and items[3] != items[9]){
+                        match.getRounds().last()->getListPlayer().at(i)->incrementKills();
+
+                        // playerstats is for animation purpose
+                        match.getRounds().last()->getListPlayer().at(i)->addPlayerStats(items[1].toUInt(),
+                                match.getRounds().last()->getListPlayer().at(i)->getKills(),
+                                match.getRounds().last()->getListPlayer().at(i)->getAssists(),
+                                match.getRounds().last()->getListPlayer().at(i)->getDeaths());
+                    }
+                    // Victim
+                    if(match.getRounds().last()->getListPlayer().at(i)->getID() == items[3]){
+                        match.getRounds().last()->getListPlayer().at(i)->incrementDeaths();
+
+                        // playerstats is for animation purpose
+                        match.getRounds().last()->getListPlayer().at(i)->addPlayerStats(items[1].toUInt(),
+                                match.getRounds().last()->getListPlayer().at(i)->getKills(),
+                                match.getRounds().last()->getListPlayer().at(i)->getAssists(),
+                                match.getRounds().last()->getListPlayer().at(i)->getDeaths());
+                    }
+                    // Assist
+                    if(match.getRounds().last()->getListPlayer().at(i)->getID() == items[15]){
+                        match.getRounds().last()->getListPlayer().at(i)->incrementAssists();
+
+                        // playerstats is for animation purpose
+                        match.getRounds().last()->getListPlayer().at(i)->addPlayerStats(items[1].toUInt(),
+                                match.getRounds().last()->getListPlayer().at(i)->getKills(),
+                                match.getRounds().last()->getListPlayer().at(i)->getAssists(),
+                                match.getRounds().last()->getListPlayer().at(i)->getDeaths());
+                    }
+                }
+            }
         }
     });
 }

@@ -89,13 +89,20 @@ ushort Player::getUtilityDMG()
     return this->mUtilityDMG;
 }
 
-
-
 void Player::addPlayerInfo(int tick, QPointF playerPosition, float playerXView, unsigned short money, unsigned char health, unsigned char armor, bool helmet, bool kit, QString activeWeapon){
-    PlayerInfo info(tick, playerPosition, playerXView, money, health, armor, helmet, kit, activeWeapon);
-    this->mListPlayerInfo.append(info);
+    this->mListPlayerInfo.append(QSharedPointer<PlayerInfo>(new PlayerInfo(tick, playerPosition, playerXView, money, health, armor, helmet, kit, activeWeapon)));
 }
 
-QList<PlayerInfo> Player::getListPlayerInfo(){
+QList<QSharedPointer<PlayerInfo>> Player::getListPlayerInfo(){
     return this->mListPlayerInfo;
+}
+
+void Player::addPlayerStats(int tick, unsigned char kills, unsigned char assists, unsigned char deaths)
+{
+    this->mListPlayerStats.append(QSharedPointer<PlayerStats>(new PlayerStats(tick, kills, assists, deaths)));
+}
+
+QList<QSharedPointer<PlayerStats> > Player::getListPlayerStats()
+{
+    return this->mListPlayerStats;
 }

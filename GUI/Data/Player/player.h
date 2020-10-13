@@ -7,6 +7,7 @@
 #include <QPainter>
 
 #include "playerInfo.h"
+#include "playerStats.h"
 
 class Player
 {
@@ -33,8 +34,10 @@ public:
     ushort getUtilityDMG();
 
     void addPlayerInfo(int tick, QPointF playerPosition, float playerXView, unsigned short money, unsigned char health, unsigned char armor, bool helmet, bool kit, QString activeWeapon);
-    QList<PlayerInfo> getListPlayerInfo();
+    QList<QSharedPointer<PlayerInfo>> getListPlayerInfo();
 
+    void addPlayerStats(int tick, unsigned char kills,  unsigned char assists,  unsigned char deaths);
+    QList<QSharedPointer<PlayerStats>> getListPlayerStats();
 private:
     QString mID = "";
     QString mName= "";
@@ -46,7 +49,8 @@ private:
     ushort mTeamFlashes = 0;
     ushort mUtilityDMG = 0;
 
-    QList<PlayerInfo> mListPlayerInfo;
+    QList<QSharedPointer<PlayerInfo>> mListPlayerInfo;
+    QList<QSharedPointer<PlayerStats>> mListPlayerStats;
 };
 
 

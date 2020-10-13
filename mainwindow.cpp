@@ -64,8 +64,11 @@ void MainWindow::on_actionOpen_Demo_triggered()
         qDebug() << this->pMatch->getRounds().size() << endl;
 
 
-        int eflashes = 0;
+        /*int eflashes = 0;
         int tflashes = 0;
+        int kill = 0;
+        int death = 0;
+        int assist = 0;
         for (int i=0; i < this->pMatch->getRounds().size(); i++){
             qDebug() << "--- --- Round" << i+1 << endl;
             qDebug() << this->pMatch->getRounds().at(i)->getStartTick()
@@ -86,23 +89,30 @@ void MainWindow::on_actionOpen_Demo_triggered()
                              << endl;
                     eflashes = eflashes + this->pMatch->getRounds().at(i)->getListPlayer().at(j)->getEnemyFlashes();
                     tflashes = tflashes + this->pMatch->getRounds().at(i)->getListPlayer().at(j)->getTeamFlahes();
-
-                    /*qDebug() << this->pMatch->getRounds().at(i)->getListPlayer().last()->getListPlayerInfo().at(i).getTick()
-                             << this->pMatch->getRounds().at(i)->getListPlayer().last()->getListPlayerInfo().at(i).getHealth()
-                             << this->pMatch->getRounds().at(i)->getListPlayer().last()->getListPlayerInfo().at(i).getArmor()
-                             << this->pMatch->getRounds().at(i)->getListPlayer().last()->getListPlayerInfo().at(i).getActiveWeapon()
-                             << this->pMatch->getRounds().at(i)->getListPlayer().last()->getListPlayerInfo().at(i).getPlayerPosition() << endl;*/
+                    kill = kill + this->pMatch->getRounds().at(i)->getListPlayer().at(j)->getKills();
+                    death = death + this->pMatch->getRounds().at(i)->getListPlayer().at(j)->getDeaths();
+                    assist = assist + this->pMatch->getRounds().at(i)->getListPlayer().at(j)->getAssists();
+                    qDebug() << this->pMatch->getRounds().at(i)->getListPlayer().at(j)->getListPlayerInfo().last()->getTick()
+                             << this->pMatch->getRounds().at(i)->getListPlayer().at(j)->getListPlayerInfo().last()->getHealth()
+                             << this->pMatch->getRounds().at(i)->getListPlayer().at(j)->getListPlayerInfo().last()->getArmor()
+                             << this->pMatch->getRounds().at(i)->getListPlayer().at(j)->getListPlayerInfo().last()->getActiveWeapon()
+                             << this->pMatch->getRounds().at(i)->getListPlayer().at(j)->getListPlayerInfo().last()->getPlayerPosition() << endl;
                 }
             }
         }
 
-        qDebug() << eflashes << tflashes << endl;
+        qDebug() << eflashes << tflashes << kill << death << assist << endl;
+        */
 
-
-        /*for(int i=0; i<this->pMatch->getRounds().first().getListPlayer().first().getListPlayerInfo().size(); i++){
-            qDebug() << this->pMatch->getRounds().first().getListPlayer().first().getListPlayerInfo().at(i).getTick() << this->pMatch->getRounds().last().getListPlayer().first().getListPlayerInfo().at(i).getActiveWeapon() << endl;
+        /*for(int r = 0; r<5; r++){
+            for(int i=0; i<this->pMatch->getRounds().at(r)->getListPlayer().first()->getListPlayerStats().size(); i++){
+                qDebug() << this->pMatch->getRounds().at(r)->getListPlayer().first()->getListPlayerStats().at(i)->getTick()
+                         << this->pMatch->getRounds().at(r)->getListPlayer().first()->getListPlayerStats().at(i)->getKills()
+                         << this->pMatch->getRounds().at(r)->getListPlayer().first()->getListPlayerStats().at(i)->getAssists()
+                         << this->pMatch->getRounds().at(r)->getListPlayer().first()->getListPlayerStats().at(i)->getDeaths()
+                         << endl;
+            }
         }*/
-
     }
 }
 
