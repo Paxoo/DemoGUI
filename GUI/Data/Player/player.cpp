@@ -39,9 +39,13 @@ void Player::incrementTeamFlahes()
     this->mTeamFlashes = this->mTeamFlashes + 1;
 }
 
-void Player::incrementUtilityDMG(unsigned short dmg)
+void Player::incrementDMGdone(QString type, unsigned short dmg)
 {
-    this->mUtilityDMG = this->mUtilityDMG + dmg;
+    if(this->mDMGdone.contains(type) == true){
+        this->mDMGdone[type] = this->mDMGdone[type] + dmg;
+    }else{
+        this->mDMGdone.insert(type, dmg);
+    }
 }
 
 QString Player::getID()
@@ -84,9 +88,9 @@ ushort Player::getTeamFlahes()
     return this->mTeamFlashes;
 }
 
-ushort Player::getUtilityDMG()
+QMap<QString, int> Player::getDMGdone()
 {
-    return this->mUtilityDMG;
+    return this->mDMGdone;
 }
 
 void Player::addPlayerInfo(int tick, QPointF playerPosition, float playerXView, unsigned short money, unsigned char health, unsigned char armor, bool helmet, bool kit, QString activeWeapon){

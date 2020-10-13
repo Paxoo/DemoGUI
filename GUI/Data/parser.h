@@ -12,6 +12,7 @@ public:
 private:
     QProcess* mProcess;
     QString calculateEquipValue(ushort value, QString round);
+    QString getWeaponType(QString type);
 };
 
 #endif // PARSER_H

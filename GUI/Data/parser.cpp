@@ -145,6 +145,16 @@ Parser::Parser(Match &match, float mapRatio)
                     }
                 }
             }
+
+            if (str.contains("DAMAGE")){
+                items = str.split(", ");
+
+                for(int i=0; i<match.getRounds().last()->getListPlayer().size(); i++){
+                    if(match.getRounds().last()->getListPlayer().at(i)->getID() == items[9]){ //attacker
+                        match.getRounds().last()->getListPlayer().at(i)->incrementDMGdone(getWeaponType(items[17]), items[15].toInt());
+                    }
+                }
+            }
         }
     });
 }
@@ -184,4 +194,59 @@ QString Parser::calculateEquipValue(ushort value, QString round)
     }
 
     return "NA";
+}
+
+QString Parser::getWeaponType(QString type)
+{
+    QMap<QString, QString> weaponMap{
+        {"0", "Unknown"},
+        {"1", "P2000"},
+        {"2", "Glock"},
+        {"3", "P250"},
+        {"4", "Deagle"},
+        {"5", "FiveSeven"},
+        {"6", "DualBerettas"},
+        {"7", "Tec9"},
+        {"8", "CZ"},
+        {"9", "USP"},
+        {"10", "Revolver"},
+        {"101", "MP7"},
+        {"102", "MP9"},
+        {"103", "Bizon"},
+        {"104", "Mac10"},
+        {"105", "UMP"},
+        {"106", "P90"},
+        {"107", "MP5"},
+        {"201", "SawedOff"},
+        {"202", "Nova"},
+        {"203", "Swag7"},
+        {"204", "XM1014"},
+        {"205", "M249"},
+        {"206", "Negev"},
+        {"301", "Galil"},
+        {"302", "Famas"},
+        {"303", "AK47"},
+        {"304", "M4A4"},
+        {"305", "M4A1"},
+        {"306", "Scout"},
+        {"307", "SG556"},
+        {"308", "AUG"},
+        {"309", "AWP"},
+        {"310", "Scar20"},
+        {"311", "G3SG1"},
+        {"401", "Zeus"},
+        {"402", "Kevlar"},
+        {"403", "Helmet"},
+        {"404", "Bomb"},
+        {"405", "Knife"},
+        {"406", "DefuseKit"},
+        {"407", "World"},
+        {"501", "Decoy"},
+        {"502", "Molotov"},
+        {"503", "Incendiary"},
+        {"504", "Flash"},
+        {"505", "Smoke"},
+        {"506", "HE"},
+    };
+    return weaponMap[type];
 }

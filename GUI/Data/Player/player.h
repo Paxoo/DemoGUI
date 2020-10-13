@@ -21,7 +21,7 @@ public:
     void incrementDeaths();
     void incrementEnemyFlashes();
     void incrementTeamFlahes();
-    void incrementUtilityDMG(unsigned short dmg);
+    void incrementDMGdone(QString type, unsigned short dmg);
 
     QString getID();
     QString getName();
@@ -31,7 +31,7 @@ public:
     ushort getDeaths();
     ushort getEnemyFlashes();
     ushort getTeamFlahes();
-    ushort getUtilityDMG();
+    QMap<QString,int> getDMGdone();
 
     void addPlayerInfo(int tick, QPointF playerPosition, float playerXView, unsigned short money, unsigned char health, unsigned char armor, bool helmet, bool kit, QString activeWeapon);
     QList<QSharedPointer<PlayerInfo>> getListPlayerInfo();
@@ -47,7 +47,7 @@ private:
     ushort mDeaths = 0;
     ushort mEnemyFlashes = 0;
     ushort mTeamFlashes = 0;
-    ushort mUtilityDMG = 0;
+    QMap<QString,int> mDMGdone;
 
     QList<QSharedPointer<PlayerInfo>> mListPlayerInfo;
     QList<QSharedPointer<PlayerStats>> mListPlayerStats;
