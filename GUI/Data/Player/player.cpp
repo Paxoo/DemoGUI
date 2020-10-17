@@ -5,6 +5,16 @@ Player::Player(QString id)
     this->mID = id;
 }
 
+Player::~Player()
+{
+    if(!this->mListPlayerInfo.empty()){
+        this->mListPlayerInfo.clear();
+    }
+    if(!this->mListPlayerStats.empty()){
+        this->mListPlayerStats.clear();
+    }
+}
+
 void Player::setName(QString name)
 {
     this->mName = name;

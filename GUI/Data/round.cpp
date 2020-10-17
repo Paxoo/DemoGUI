@@ -8,6 +8,13 @@ Round::Round(QList<QString> &ids)
     }
 }
 
+Round::~Round()
+{
+    if(!this->mListPlayer.empty()){
+        this->mListPlayer.clear();
+    }
+}
+
 void Round::setRoundStartStats(uint32_t startTick, ushort startTscore, ushort startCTscore)
 {
     this->mStartTick = startTick;

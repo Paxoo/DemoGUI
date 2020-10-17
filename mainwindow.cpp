@@ -7,13 +7,9 @@
 #include <QDebug>
 #include <QGraphicsEllipseItem>
 #include <QTimeLine>
-#include <QPropertyAnimation>
-#include <QParallelAnimationGroup>
-#include <QSequentialAnimationGroup>
-#include <QPauseAnimation>
 
-#include <QStandardItemModel>
 #include <GUI\Data\parser.h>
+#include <GUI\Stats\statswindow.h>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -43,6 +39,8 @@ void MainWindow::on_actionOpen_Demo_triggered()
         // get the information!
         Parser parser(*this->pMatch, this->mapRatio);
         parser.runParser(fileName);
+
+        this->gDemoParsed = true;
 
         // load map as Pixmap
         QString mapPath = ".\\map\\";
@@ -128,20 +126,29 @@ void MainWindow::on_actionOpen_Demo_triggered()
 
 void MainWindow::on_playButton_clicked()
 {
-    if(this->group != nullptr){
+    /*if(this->group != nullptr){
         if(this->gAnimationStarted == false){
             this->group->start();
         }else{
             this->group->setPaused(false);
         }
 
-    }
+    }*/
 }
 
 void MainWindow::on_stopButton_clicked()
 {
-    if(this->group != nullptr){
+    /*if(this->group != nullptr){
         this->group->setPaused(true);
         this->gAnimationStarted = true;
+    }*/
+}
+
+void MainWindow::on_actionStats_2_triggered()
+{
+    if(this->gDemoParsed == true){
+        StatsWindow *dialog = new StatsWindow();
+        dialog->fillTableOverallStats(this->pMatch);
+        dialog->show();
     }
 }

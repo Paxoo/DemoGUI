@@ -27,12 +27,14 @@ private slots:
 
     void on_stopButton_clicked();
 
+    void on_actionStats_2_triggered();
+
 private:
     Ui::MainWindow *ui;
     QGraphicsScene *scene = nullptr;
     Match *pMatch = nullptr;
 
     QParallelAnimationGroup *group = nullptr;
-    bool gAnimationStarted = false;
+    bool gDemoParsed = false;
 };
 #endif // MAINWINDOW_H

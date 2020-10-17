@@ -153,12 +153,29 @@ p, li { white-space: pre-wrap; }
     </property>
     <addaction name="actionOpen_Demo"/>
    </widget>
+   <widget class="QMenu" name="menuStatistic">
+    <property name="title">
+     <string>Statistic</string>
+    </property>
+    <addaction name="actionStats_2"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuStatistic"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionOpen_Demo">
    <property name="text">
     <string>Open Demo</string>
+   </property>
+  </action>
+  <action name="actionStats">
+   <property name="text">
+    <string>Stats</string>
+   </property>
+  </action>
+  <action name="actionStats_2">
+   <property name="text">
+    <string>Stats</string>
    </property>
   </action>
  </widget>

@@ -21,6 +21,7 @@ public:
 
     void addRound();
     QList<QSharedPointer<Round>> getRounds();
+    QList<QString> getListPlayerIDs();
 
 private:
     QString mMap = "";

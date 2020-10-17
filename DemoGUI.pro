@@ -22,6 +22,8 @@ SOURCES += \
     GUI/Data/match.cpp \
     GUI/Data/parser.cpp \
     GUI/Data/round.cpp \
+    GUI/Stats/overalltablemodel.cpp \
+    GUI/Stats/statswindow.cpp \
     main.cpp \
     mainwindow.cpp
 
@@ -32,9 +34,12 @@ HEADERS += \
     GUI/Data/match.h \
     GUI/Data/parser.h \
     GUI/Data/round.h \
+    GUI/Stats/overalltablemodel.h \
+    GUI/Stats/statswindow.h \
     mainwindow.h \
 
 FORMS += \
+    GUI/Stats/statswindow.ui \
     mainwindow.ui
 
 # Default rules for deployment.

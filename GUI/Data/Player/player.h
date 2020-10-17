@@ -13,6 +13,7 @@ class Player
 {
 public:
     Player(QString id);
+    ~Player();
 
     void setName(QString name);
     void setPlayerSide(QString playerSide);

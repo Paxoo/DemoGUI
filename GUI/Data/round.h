@@ -8,6 +8,7 @@ class Round
 {
 public:
     Round(QList<QString> &ids);
+    ~Round();
 
     void setRoundStartStats(uint32_t startTick, ushort startTscore, ushort startCTscore);
     void setFreezeEndTick(uint32_t freezeEndTick);

@@ -11,6 +11,9 @@ Match::~Match()
     if(!this->mListRounds.empty()){
         this->mListRounds.clear();
     }
+    if(!this->mListPlayerIDs.empty()){
+        this->mListPlayerIDs.clear();
+    }
 }
 
 void Match::setPlayers(QList<QString> listPlayerIDs)
@@ -56,4 +59,9 @@ void Match::addRound()
 QList<QSharedPointer<Round>> Match::getRounds()
 {
     return this->mListRounds;
+}
+
+QList<QString> Match::getListPlayerIDs()
+{
+    return this->mListPlayerIDs;
 }
