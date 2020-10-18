@@ -1,8 +1,9 @@
-QT       += core gui
+QT       += core gui charts
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++11
+
 
 # The following define makes your compiler emit warnings if you use
 # any Qt feature that has been marked deprecated (the exact warnings
@@ -22,6 +23,7 @@ SOURCES += \
     GUI/Data/match.cpp \
     GUI/Data/parser.cpp \
     GUI/Data/round.cpp \
+    GUI/Stats/dmgbartablemodel.cpp \
     GUI/Stats/overalltablemodel.cpp \
     GUI/Stats/statswindow.cpp \
     main.cpp \
@@ -34,6 +36,7 @@ HEADERS += \
     GUI/Data/match.h \
     GUI/Data/parser.h \
     GUI/Data/round.h \
+    GUI/Stats/dmgbartablemodel.h \
     GUI/Stats/overalltablemodel.h \
     GUI/Stats/statswindow.h \
     mainwindow.h \

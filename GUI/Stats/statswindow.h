@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include "overalltablemodel.h"
+#include "dmgbartablemodel.h"
 #include <QSortFilterProxyModel>
 #include "GUI\Data\match.h"
 
@@ -18,13 +19,16 @@ public:
     explicit StatsWindow(QWidget *parent = nullptr);
     ~StatsWindow();
 
-    void fillTableOverallStats(Match *match);
+    void fillTableModels(Match *match);
     void addEntryOverallStats(QString name, int kills, int assists, int deaths, float kdr, int ef, int tf, int ud);
+    void addEntryDmgBarChart(QString name, int r, int w, int u);
 
 private:
     Ui::StatsWindow *ui;
     OverallTableModel *pTableOverallStats = nullptr;
     QSortFilterProxyModel *proxyModelOverallStats = nullptr;
+    DmgBarTableModel *pDmgBarStats = nullptr;
+    QSortFilterProxyModel *proxyModelDmgBarStats = nullptr;
 };
 
 #endif // STATSWINDOW_H

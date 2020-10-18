@@ -148,7 +148,7 @@ void MainWindow::on_actionStats_2_triggered()
 {
     if(this->gDemoParsed == true){
         StatsWindow *dialog = new StatsWindow();
-        dialog->fillTableOverallStats(this->pMatch);
+        dialog->fillTableModels(this->pMatch);
         dialog->show();
     }
 }
