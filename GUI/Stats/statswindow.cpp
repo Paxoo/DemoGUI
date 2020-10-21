@@ -1,6 +1,6 @@
 #include "statswindow.h"
 #include "ui_statswindow.h"
-#include <QStackedBarSeries>
+#include <QBarSet>
 
 StatsWindow::StatsWindow(QWidget *parent) :
     QDialog(parent),
@@ -15,13 +15,15 @@ StatsWindow::StatsWindow(QWidget *parent) :
     ui->overalStatsView->setModel(proxyModelOverallStats);
     ui->overalStatsView->setSortingEnabled(true);
 
-    // Damage Bar chart
+    // BarChart Model
     pDmgBarStats = new DmgBarTableModel();
     proxyModelDmgBarStats = new QSortFilterProxyModel(this);
-    proxyModelOverallStats->setSourceModel(pDmgBarStats);
+    proxyModelDmgBarStats->setSourceModel(pDmgBarStats);
 
-    QChart *chart = new QChart();
-    chart->setAnimationOptions(QChart::AllAnimations);
+    // use ComboBox to filter proxyModelDmgBarStats
+    connect(ui->comboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), [=](int index){
+        proxyModelDmgBarStats->setFilterRegExp(QRegExp(ui->comboBox->itemText(index), Qt::CaseInsensitive,QRegExp::FixedString));
+    });
 }
 
 StatsWindow::~StatsWindow()
@@ -31,6 +33,12 @@ StatsWindow::~StatsWindow()
     delete proxyModelOverallStats;
     delete pDmgBarStats;
     delete proxyModelDmgBarStats;
+    delete pBarchart;
+    delete pBarchartAxisX;
+    delete pBarchartAxisY;
+    delete pBarchartSeries;
+    delete pBarchartMapper;
+    delete pBarchartView;
 }
 
 void StatsWindow::fillTableModels(Match *match)
@@ -44,11 +52,12 @@ void StatsWindow::fillTableModels(Match *match)
         float kdr = 0.0;
         int enemyFlashes = 0;
         int teamFlashes = 0;
-        int utilityDMG = 0;
-        int weaponDMG = 0;
+        int total_utilityDMG = 0;
 
         // sum up all stats over each round
         for (int r=0; r < match->getRounds().size(); r++){
+            int round_utilityDMG = 0;
+            int round_weaponDMG = 0;
             for(int j=0; j < match->getRounds().at(r)->getListPlayer().size(); j++){
                 if(match->getRounds().at(r)->getListPlayer().at(j)->getID() == match->getListPlayerIDs().at(p)){
                     name = match->getRounds().at(r)->getListPlayer().at(j)->getName();
@@ -61,26 +70,38 @@ void StatsWindow::fillTableModels(Match *match)
                     QList<QString> utility = {"Decoy", "Molotov", "Incendiary", "Flash", "Smoke", "HE"};
                     for(int u = 0; u < utility.size(); u++){
                         if(match->getRounds().at(r)->getListPlayer().at(j)->getDMGdone().contains(utility.at(u)) == true){
-                            utilityDMG = utilityDMG + match->getRounds().at(r)->getListPlayer().at(j)->getDMGdone().value(utility.at(u));
+                            total_utilityDMG = total_utilityDMG + match->getRounds().at(r)->getListPlayer().at(j)->getDMGdone().value(utility.at(u));
+                            round_utilityDMG = round_utilityDMG + match->getRounds().at(r)->getListPlayer().at(j)->getDMGdone().value(utility.at(u));
                         }
                     }
 
                     QList<QString> weapons = {"P2000","Glock","P250","Deagle","FiveSeven","DualBerettas","Tec9","CZ","USP","Revolver",
                                             "MP7","MP9","Bizon","Mac10","UMP","P90","MP5","SawedOff","Nova","Swag7","XM1014","M249",
                                             "Negev","Galil","Famas","AK47","M4A4","M4A1","Scout","SG556","AUG","AWP","Scar20","G3SG1","Zeus","Knife"};
-                    for(int u = 0; u < weapons.size(); u++){
-                        if(match->getRounds().at(r)->getListPlayer().at(j)->getDMGdone().contains(utility.at(u)) == true){
-                            weaponDMG = weaponDMG + match->getRounds().at(r)->getListPlayer().at(j)->getDMGdone().value(utility.at(u));
+                    for(int w = 0; w < weapons.size(); w++){
+                        if(match->getRounds().at(r)->getListPlayer().at(j)->getDMGdone().contains(weapons.at(w)) == true){
+                            round_weaponDMG = round_weaponDMG + match->getRounds().at(r)->getListPlayer().at(j)->getDMGdone().value(weapons.at(w));
                         }
                     }
                     // Bar Chart dmg done during round
-                    addEntryDmgBarChart(name, r, weaponDMG, utilityDMG);
+                    addEntryDmgBarChart(name, r, round_weaponDMG, round_utilityDMG);
+
+                    // Dont know how to adjust axes so we do this shit
+                    if(maxDMG < round_utilityDMG){
+                        maxDMG = round_utilityDMG;
+                    }
+                    if(maxDMG < round_weaponDMG){
+                        maxDMG = round_weaponDMG;
+                    }
                 }
             }
         }
         kdr = (float)kills / (float)deaths;
         // Overall Stats add entry
-        addEntryOverallStats(name, kills, assists, deaths, kdr, enemyFlashes, teamFlashes, utilityDMG);
+        addEntryOverallStats(name, kills, assists, deaths, kdr, enemyFlashes, teamFlashes, total_utilityDMG);
+
+        // Fill comboBox with Playernames
+        ui->comboBox->addItem(name);
     }
 }
 
@@ -118,15 +139,56 @@ void StatsWindow::addEntryDmgBarChart(QString name, int r, int w, int u)
     QModelIndex index = pDmgBarStats->index(0, 0, QModelIndex());
     pDmgBarStats->setData(index, name, Qt::EditRole);
 
-    pDmgBarStats->insertRows(0, 1, QModelIndex());
     index = pDmgBarStats->index(0, 1, QModelIndex());
     pDmgBarStats->setData(index, r, Qt::EditRole);
 
-    pDmgBarStats->insertRows(0, 1, QModelIndex());
     index = pDmgBarStats->index(0, 2, QModelIndex());
     pDmgBarStats->setData(index, w, Qt::EditRole);
 
-    pDmgBarStats->insertRows(0, 1, QModelIndex());
     index = pDmgBarStats->index(0, 3, QModelIndex());
     pDmgBarStats->setData(index, u, Qt::EditRole);
+}
+
+void StatsWindow::createBarChart()
+{
+    // Chart
+    pBarchart = new QChart();
+    pBarchart->setAnimationOptions(QChart::AllAnimations);
+    pBarchart->setTitle("Damage done during each round");
+    pBarchart->legend()->setVisible(true);
+    pBarchart->legend()->setAlignment(Qt::AlignBottom);
+
+    // create chart axes
+    QStringList categories;
+    for (int i =0; i<proxyModelDmgBarStats->rowCount(); i++){
+        categories << QString::number(i+1);
+    }
+    pBarchartAxisX = new QBarCategoryAxis();
+    pBarchartAxisX->append(categories);
+    pBarchart->addAxis(pBarchartAxisX, Qt::AlignBottom);
+    pBarchartAxisY = new QValueAxis();
+    pBarchartAxisY->setRange(0, maxDMG);
+    pBarchartAxisY->setTickCount(10);
+    pBarchart->addAxis(pBarchartAxisY, Qt::AlignLeft);
+
+    // BarSeries
+    pBarchartSeries = new QBarSeries;
+    pBarchartSeries->setBarWidth(1);
+    pBarchartSeries->attachAxis(pBarchartAxisX);
+
+    // Data Mapper
+    pBarchartMapper = new QVBarModelMapper(this);
+    pBarchartMapper->setFirstBarSetColumn(2);
+    pBarchartMapper->setLastBarSetColumn(3);
+    pBarchartMapper->setFirstRow(0);
+    pBarchartMapper->setRowCount(proxyModelDmgBarStats->rowCount());
+    pBarchartMapper->setSeries(pBarchartSeries);
+    pBarchartMapper->setModel(proxyModelDmgBarStats);
+    pBarchart->addSeries(pBarchartSeries);
+    pBarchartSeries->attachAxis(pBarchartAxisY);
+
+    // Chart View
+    pBarchartView = new QChartView(pBarchart);
+    pBarchartView->setRenderHint(QPainter::Antialiasing);
+    ui->horizontalLayout->addWidget(pBarchartView);
 }

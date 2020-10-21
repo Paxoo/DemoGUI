@@ -68,7 +68,7 @@ void MainWindow::on_actionOpen_Demo_triggered()
         int death = 0;
         int assist = 0;*/
         for (int i=0; i < this->pMatch->getRounds().size(); i++){
-            qDebug() << "--- --- Round" << i+1 << endl;
+            //qDebug() << "--- --- Round" << i+1 << endl;
             /*qDebug() << this->pMatch->getRounds().at(i)->getStartTick()
                      << this->pMatch->getRounds().at(i)->getFreezeEndTick()
                      << this->pMatch->getRounds().at(i)->getEndTick()
@@ -77,7 +77,7 @@ void MainWindow::on_actionOpen_Demo_triggered()
             qDebug() << this->pMatch->getRounds().at(i)->getTmoneySpentTotal() << this->pMatch->getRounds().at(i)->getTmoneySpentRound() << this->pMatch->getRounds().at(i)->getTfreezetimeEndEquipValue() << endl;
             qDebug() << this->pMatch->getRounds().at(i)->getCTmoneySpentTotal() << this->pMatch->getRounds().at(i)->getCTmoneySpentRound() << this->pMatch->getRounds().at(i)->getCTfreezetimeEndEquipValue() << endl;
             */
-            qDebug() << "--- Player ---" << this->pMatch->getRounds().at(i)->getListPlayer().size() << endl;
+            /*qDebug() << "--- Player ---" << this->pMatch->getRounds().at(i)->getListPlayer().size() << endl;
             for(int j=0; j < this->pMatch->getRounds().at(i)->getListPlayer().size(); j++){
                 if(this->pMatch->getRounds().at(i)->getListPlayer().at(j)->getID() == "76561197968320879"){
                     qDebug() << this->pMatch->getRounds().at(i)->getListPlayer().at(j)->getID()
@@ -92,7 +92,7 @@ void MainWindow::on_actionOpen_Demo_triggered()
                                  << endl;
                     }
 
-                    /*eflashes = eflashes + this->pMatch->getRounds().at(i)->getListPlayer().at(j)->getEnemyFlashes();
+                    eflashes = eflashes + this->pMatch->getRounds().at(i)->getListPlayer().at(j)->getEnemyFlashes();
                     tflashes = tflashes + this->pMatch->getRounds().at(i)->getListPlayer().at(j)->getTeamFlahes();
                     kill = kill + this->pMatch->getRounds().at(i)->getListPlayer().at(j)->getKills();
                     death = death + this->pMatch->getRounds().at(i)->getListPlayer().at(j)->getDeaths();
@@ -101,9 +101,9 @@ void MainWindow::on_actionOpen_Demo_triggered()
                              << this->pMatch->getRounds().at(i)->getListPlayer().at(j)->getListPlayerInfo().last()->getHealth()
                              << this->pMatch->getRounds().at(i)->getListPlayer().at(j)->getListPlayerInfo().last()->getArmor()
                              << this->pMatch->getRounds().at(i)->getListPlayer().at(j)->getListPlayerInfo().last()->getActiveWeapon()
-                             << this->pMatch->getRounds().at(i)->getListPlayer().at(j)->getListPlayerInfo().last()->getPlayerPosition() << endl;*/
+                             << this->pMatch->getRounds().at(i)->getListPlayer().at(j)->getListPlayerInfo().last()->getPlayerPosition() << endl;
                 }
-            }
+            }*/
         }
 
         //qDebug() << eflashes << tflashes << kill << death << assist << endl;
@@ -149,6 +149,7 @@ void MainWindow::on_actionStats_2_triggered()
     if(this->gDemoParsed == true){
         StatsWindow *dialog = new StatsWindow();
         dialog->fillTableModels(this->pMatch);
+        dialog->createBarChart();
         dialog->show();
     }
 }
