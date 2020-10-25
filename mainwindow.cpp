@@ -150,6 +150,7 @@ void MainWindow::on_actionStats_2_triggered()
         StatsWindow *dialog = new StatsWindow();
         dialog->fillTableModels(this->pMatch);
         dialog->createBarChart();
+        dialog->createPieChart();
         dialog->show();
     }
 }

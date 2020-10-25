@@ -24,6 +24,9 @@ SOURCES += \
     GUI/Data/parser.cpp \
     GUI/Data/round.cpp \
     GUI/Stats/dmgbartablemodel.cpp \
+    GUI/Stats/dmgpiecharttablemodel.cpp \
+    GUI/Stats/donutbreakdownchart.cpp \
+    GUI/Stats/mainslice.cpp \
     GUI/Stats/overalltablemodel.cpp \
     GUI/Stats/statswindow.cpp \
     main.cpp \
@@ -37,6 +40,9 @@ HEADERS += \
     GUI/Data/parser.h \
     GUI/Data/round.h \
     GUI/Stats/dmgbartablemodel.h \
+    GUI/Stats/dmgpiecharttablemodel.h \
+    GUI/Stats/donutbreakdownchart.h \
+    GUI/Stats/mainslice.h \
     GUI/Stats/overalltablemodel.h \
     GUI/Stats/statswindow.h \
     mainwindow.h \

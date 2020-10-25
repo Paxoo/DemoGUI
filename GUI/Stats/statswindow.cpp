@@ -1,6 +1,8 @@
 #include "statswindow.h"
 #include "ui_statswindow.h"
 #include <QBarSet>
+#include <QPieLegendMarker>
+#include <QtCharts/QPieSlice>
 
 StatsWindow::StatsWindow(QWidget *parent) :
     QDialog(parent),
@@ -20,9 +22,40 @@ StatsWindow::StatsWindow(QWidget *parent) :
     proxyModelDmgBarStats = new QSortFilterProxyModel(this);
     proxyModelDmgBarStats->setSourceModel(pDmgBarStats);
 
+    // PieChart Model
+    pPiechartTableModel = new DMGPieChartTableModel();
+    proxyModelPieChart = new QSortFilterProxyModel(this);
+    proxyModelPieChart->setSourceModel(pPiechartTableModel);
+
+    proxyModelPieChartUT = new QSortFilterProxyModel(this);
+    proxyModelPieChartUT->setSourceModel(proxyModelPieChart);
+    proxyModelPieChartUT->setFilterKeyColumn(1);
+
+    proxyModelPieChartWeapon = new QSortFilterProxyModel(this);
+    proxyModelPieChartWeapon->setSourceModel(proxyModelPieChart);
+    proxyModelPieChartWeapon->setFilterKeyColumn(1);
+
+    /*addEntryDmgPieChart("Paxo", "WP", "AK", 650);
+    addEntryDmgPieChart("Paxo", "WP", "AWP", 40);
+    addEntryDmgPieChart("Paxo", "WP", "knife", 2);
+    addEntryDmgPieChart("Paxo", "UT", "HE", 98);
+    addEntryDmgPieChart("thiN-", "WP", "penis", 900);
+    addEntryDmgPieChart("Maxi", "UT", "HE", 40);
+    addEntryDmgPieChart("Maxi", "UT", "Molo", 120);*/
+
     // use ComboBox to filter proxyModelDmgBarStats
     connect(ui->comboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), [=](int index){
         proxyModelDmgBarStats->setFilterRegExp(QRegExp(ui->comboBox->itemText(index), Qt::CaseInsensitive,QRegExp::FixedString));
+
+        if(pDonutBreakdown != nullptr){
+            proxyModelPieChart->setFilterRegExp(QRegExp(ui->comboBox->itemText(index), Qt::CaseInsensitive,QRegExp::FixedString));
+            proxyModelPieChartUT->setFilterRegExp(QRegExp("UT", Qt::CaseInsensitive,QRegExp::FixedString));
+            pMapperUT->setRowCount(proxyModelPieChartUT->rowCount());
+            proxyModelPieChartWeapon->setFilterRegExp(QRegExp("WP", Qt::CaseInsensitive,QRegExp::FixedString));
+            pMapperWD->setRowCount(proxyModelPieChartWeapon->rowCount());
+            pDonutBreakdown->recalculateAngles({QColor(153,202,83), QColor(32,159,223)});
+            pDonutBreakdown->updateLegendMarkers();
+        }
     });
 }
 
@@ -31,6 +64,7 @@ StatsWindow::~StatsWindow()
     delete ui;
     delete pTableOverallStats;
     delete proxyModelOverallStats;
+
     delete pDmgBarStats;
     delete proxyModelDmgBarStats;
     delete pBarchart;
@@ -39,6 +73,18 @@ StatsWindow::~StatsWindow()
     delete pBarchartSeries;
     delete pBarchartMapper;
     delete pBarchartView;
+
+    delete pPieChart;
+    delete pPiechartTableModel;
+    delete proxyModelPieChart;
+    delete proxyModelPieChartUT;
+    delete proxyModelPieChartWeapon;
+    delete pSeriesUT;
+    delete pMapperUT;
+    delete pSeriesWD;
+    delete pMapperWD;
+    delete pDonutBreakdown;
+    delete pPieChartView;
 }
 
 void StatsWindow::fillTableModels(Match *match)
@@ -53,6 +99,8 @@ void StatsWindow::fillTableModels(Match *match)
         int enemyFlashes = 0;
         int teamFlashes = 0;
         int total_utilityDMG = 0;
+        QMap<QString,int> mapDamageUT;
+        QMap<QString,int> mapDamageWP;
 
         // sum up all stats over each round
         for (int r=0; r < match->getRounds().size(); r++){
@@ -72,6 +120,13 @@ void StatsWindow::fillTableModels(Match *match)
                         if(match->getRounds().at(r)->getListPlayer().at(j)->getDMGdone().contains(utility.at(u)) == true){
                             total_utilityDMG = total_utilityDMG + match->getRounds().at(r)->getListPlayer().at(j)->getDMGdone().value(utility.at(u));
                             round_utilityDMG = round_utilityDMG + match->getRounds().at(r)->getListPlayer().at(j)->getDMGdone().value(utility.at(u));
+
+                            if(mapDamageUT.contains(utility.at(u)) == true){
+                                qDebug() << mapDamageUT.value(utility.at(u)) << match->getRounds().at(r)->getListPlayer().at(j)->getDMGdone().value(utility.at(u)) << endl;
+                                mapDamageUT[utility.at(u)] = mapDamageUT.value(utility.at(u)) + match->getRounds().at(r)->getListPlayer().at(j)->getDMGdone().value(utility.at(u));
+                            }else{
+                                mapDamageUT.insert(utility.at(u),match->getRounds().at(r)->getListPlayer().at(j)->getDMGdone().value(utility.at(u)));
+                            }
                         }
                     }
 
@@ -81,6 +136,12 @@ void StatsWindow::fillTableModels(Match *match)
                     for(int w = 0; w < weapons.size(); w++){
                         if(match->getRounds().at(r)->getListPlayer().at(j)->getDMGdone().contains(weapons.at(w)) == true){
                             round_weaponDMG = round_weaponDMG + match->getRounds().at(r)->getListPlayer().at(j)->getDMGdone().value(weapons.at(w));
+
+                            if(mapDamageWP.contains(weapons.at(w)) == true){
+                                mapDamageWP[weapons.at(w)] = mapDamageWP.value(weapons.at(w)) + match->getRounds().at(r)->getListPlayer().at(j)->getDMGdone().value(weapons.at(w));
+                            }else{
+                                mapDamageWP.insert(weapons.at(w),match->getRounds().at(r)->getListPlayer().at(j)->getDMGdone().value(weapons.at(w)));
+                            }
                         }
                     }
                     // Bar Chart dmg done during round
@@ -93,12 +154,27 @@ void StatsWindow::fillTableModels(Match *match)
                     if(maxDMG < round_weaponDMG){
                         maxDMG = round_weaponDMG;
                     }
+                // end match->getRounds().at(r)->getListPlayer().at(j)->getID()
                 }
+            // end match->getRounds().at(r)->getListPlayer().size()
             }
+        // end match->getRounds().size()
         }
         kdr = (float)kills / (float)deaths;
         // Overall Stats add entry
         addEntryOverallStats(name, kills, assists, deaths, kdr, enemyFlashes, teamFlashes, total_utilityDMG);
+
+        // add Values for PieChart
+        QMap<QString, int>::iterator i;
+        for (i = mapDamageUT.begin(); i != mapDamageUT.end(); ++i){
+            addEntryDmgPieChart(name, "UT", i.key(), i.value());
+        }
+        for (i = mapDamageWP.begin(); i != mapDamageWP.end(); ++i){
+            addEntryDmgPieChart(name, "WP", i.key(), i.value() );
+        }
+
+        mapDamageUT.clear();
+        mapDamageWP.clear();
 
         // Fill comboBox with Playernames
         ui->comboBox->addItem(name);
@@ -149,6 +225,22 @@ void StatsWindow::addEntryDmgBarChart(QString name, int r, int w, int u)
     pDmgBarStats->setData(index, u, Qt::EditRole);
 }
 
+void StatsWindow::addEntryDmgPieChart(QString name, QString type, QString w, int value)
+{
+    pPiechartTableModel->insertRows(0, 1, QModelIndex());
+    QModelIndex index = pPiechartTableModel->index(0, 0, QModelIndex());
+    pPiechartTableModel->setData(index, name, Qt::EditRole);
+
+    index = pPiechartTableModel->index(0, 1, QModelIndex());
+    pPiechartTableModel->setData(index, type, Qt::EditRole);
+
+    index = pPiechartTableModel->index(0, 2, QModelIndex());
+    pPiechartTableModel->setData(index, w, Qt::EditRole);
+
+    index = pPiechartTableModel->index(0, 3, QModelIndex());
+    pPiechartTableModel->setData(index, value, Qt::EditRole);
+}
+
 void StatsWindow::createBarChart()
 {
     // Chart
@@ -191,4 +283,51 @@ void StatsWindow::createBarChart()
     pBarchartView = new QChartView(pBarchart);
     pBarchartView->setRenderHint(QPainter::Antialiasing);
     ui->horizontalLayout->addWidget(pBarchartView);
+}
+
+void StatsWindow::createPieChart()
+{
+    // Series - Data Mapper Utility
+    pSeriesUT = new QPieSeries();
+
+    pMapperUT = new QVPieModelMapper(this);
+    pMapperUT->setLabelsColumn(2);
+    pMapperUT->setValuesColumn(3);
+    pMapperUT->setFirstRow(0);
+    pMapperUT->setRowCount(proxyModelPieChartUT->rowCount());
+    pMapperUT->setSeries(pSeriesUT);
+    pMapperUT->setModel(proxyModelPieChartUT);
+
+    // Series - Data Mapper WeaponDMG
+    pSeriesWD = new QPieSeries();
+
+    pMapperWD = new QVPieModelMapper(this);
+    pMapperWD->setLabelsColumn(2);
+    pMapperWD->setValuesColumn(3);
+    pMapperWD->setFirstRow(0);
+    pMapperWD->setRowCount(proxyModelPieChartWeapon->rowCount());
+    pMapperWD->setSeries(pSeriesWD);
+    pMapperWD->setModel(proxyModelPieChartWeapon);
+
+    // PieChart
+    pDonutBreakdown = new DonutBreakdownChart();
+    pDonutBreakdown->setAnimationOptions(QChart::AllAnimations);
+    pDonutBreakdown->setTitle("Total damage done");
+    pDonutBreakdown->legend()->setAlignment(Qt::AlignRight);
+    pDonutBreakdown->addBreakdownSeries(pSeriesUT, QColor(153,202,83));
+    pDonutBreakdown->addBreakdownSeries(pSeriesWD, QColor(32,159,223));
+
+    // Chart View
+    pPieChartView = new QChartView(pDonutBreakdown);
+    pPieChartView->setRenderHint(QPainter::Antialiasing);
+    ui->Piepie->addWidget(pPieChartView);
+
+    // update the chart
+    proxyModelPieChart->setFilterRegExp(QRegExp(ui->comboBox->itemText(0), Qt::CaseInsensitive,QRegExp::FixedString));
+    proxyModelPieChartUT->setFilterRegExp(QRegExp("UT", Qt::CaseInsensitive,QRegExp::FixedString));
+    pMapperUT->setRowCount(proxyModelPieChartUT->rowCount());
+    proxyModelPieChartWeapon->setFilterRegExp(QRegExp("WP", Qt::CaseInsensitive,QRegExp::FixedString));
+    pMapperWD->setRowCount(proxyModelPieChartWeapon->rowCount());
+    pDonutBreakdown->recalculateAngles({QColor(153,202,83), QColor(32,159,223)});
+    pDonutBreakdown->updateLegendMarkers();
 }
