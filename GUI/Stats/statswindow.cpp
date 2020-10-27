@@ -35,14 +35,6 @@ StatsWindow::StatsWindow(QWidget *parent) :
     proxyModelPieChartWeapon->setSourceModel(proxyModelPieChart);
     proxyModelPieChartWeapon->setFilterKeyColumn(1);
 
-    /*addEntryDmgPieChart("Paxo", "WP", "AK", 650);
-    addEntryDmgPieChart("Paxo", "WP", "AWP", 40);
-    addEntryDmgPieChart("Paxo", "WP", "knife", 2);
-    addEntryDmgPieChart("Paxo", "UT", "HE", 98);
-    addEntryDmgPieChart("thiN-", "WP", "penis", 900);
-    addEntryDmgPieChart("Maxi", "UT", "HE", 40);
-    addEntryDmgPieChart("Maxi", "UT", "Molo", 120);*/
-
     // use ComboBox to filter proxyModelDmgBarStats
     connect(ui->comboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), [=](int index){
         proxyModelDmgBarStats->setFilterRegExp(QRegExp(ui->comboBox->itemText(index), Qt::CaseInsensitive,QRegExp::FixedString));

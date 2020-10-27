@@ -46,7 +46,7 @@ Parser::Parser(Match &match, float mapRatio)
                 reason[10]="Draw";
                 reason[12]="TargetSaved";
 
-                match.getRounds().last()->setRoundEndStats(reason[items[8].toUShort()]);
+                match.getRounds().last()->setRoundEndStats(items[5], reason[items[8].toUShort()]);
                 match.setTeamNameA(items[6]);
                 match.setTeamNameB(items[7]);
             }

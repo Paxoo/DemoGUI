@@ -5,6 +5,7 @@
 #include <QGraphicsScene>
 #include <QParallelAnimationGroup>
 #include <GUI\Data\match.h>
+#include <QPushButton>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -21,6 +22,9 @@ public:
     ~MainWindow();
 
 private slots:
+    void create_roundButtons(int rounds);
+    void color_roundButtons(QPushButton* button, QString team);
+
     void on_actionOpen_Demo_triggered();
 
     void on_playButton_clicked();
@@ -29,6 +33,66 @@ private slots:
 
     void on_actionStats_2_triggered();
 
+    void on_roundButton_5_clicked();
+
+    void on_roundButton_clicked();
+
+    void on_roundButton_2_clicked();
+
+    void on_roundButton_3_clicked();
+
+    void on_roundButton_4_clicked();
+
+    void on_roundButton_6_clicked();
+
+    void on_roundButton_7_clicked();
+
+    void on_roundButton_8_clicked();
+
+    void on_roundButton_9_clicked();
+
+    void on_roundButton_10_clicked();
+
+    void on_roundButton_11_clicked();
+
+    void on_roundButton_12_clicked();
+
+    void on_roundButton_13_clicked();
+
+    void on_roundButton_14_clicked();
+
+    void on_roundButton_15_clicked();
+
+    void on_roundButton_16_clicked();
+
+    void on_roundButton_17_clicked();
+
+    void on_roundButton_18_clicked();
+
+    void on_roundButton_19_clicked();
+
+    void on_roundButton_20_clicked();
+
+    void on_roundButton_21_clicked();
+
+    void on_roundButton_22_clicked();
+
+    void on_roundButton_23_clicked();
+
+    void on_roundButton_24_clicked();
+
+    void on_roundButton_25_clicked();
+
+    void on_roundButton_26_clicked();
+
+    void on_roundButton_27_clicked();
+
+    void on_roundButton_28_clicked();
+
+    void on_roundButton_29_clicked();
+
+    void on_roundButton_30_clicked();
+
 private:
     Ui::MainWindow *ui;
     QGraphicsScene *scene = nullptr;
@@ -36,5 +100,6 @@ private:
 
     QParallelAnimationGroup *group = nullptr;
     bool gDemoParsed = false;
+    QList<QPushButton*> listRoundButton;
 };
 #endif // MAINWINDOW_H

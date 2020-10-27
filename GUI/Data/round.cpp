@@ -42,8 +42,9 @@ void Round::setRoundPurchase(uint32_t tmoneySpentTotal, ushort tmoneySpentRound,
     this->mCTfreezetimeEndEquipValue = ctfreezetimeEndEquipValue;
 }
 
-void Round::setRoundEndStats(QString reasonRoundEnd)
+void Round::setRoundEndStats(QString winner, QString reasonRoundEnd)
 {
+    this->mRoundWinner = winner;
     this->mReasonRoundEnd = reasonRoundEnd;
 }
 
@@ -60,6 +61,11 @@ uint32_t Round::getFreezeEndTick()
 uint32_t Round::getEndTick()
 {
     return this->mEndTick;
+}
+
+QString Round::getRoundWinner()
+{
+    return this->mRoundWinner;
 }
 
 QString Round::getReasonRoundEnd()

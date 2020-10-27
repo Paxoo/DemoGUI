@@ -16,7 +16,6 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
     this->pMatch = new Match();
 }
 
@@ -26,7 +25,78 @@ MainWindow::~MainWindow()
     delete scene;
     delete pMatch;
     delete group;
+    listRoundButton.clear();
 }
+
+void MainWindow::create_roundButtons(int rounds)
+{
+    listRoundButton.append(ui->roundButton);
+    listRoundButton.append(ui->roundButton_2);
+    listRoundButton.append(ui->roundButton_3);
+    listRoundButton.append(ui->roundButton_4);
+    listRoundButton.append(ui->roundButton_5);
+    listRoundButton.append(ui->roundButton_6);
+    listRoundButton.append(ui->roundButton_7);
+    listRoundButton.append(ui->roundButton_8);
+    listRoundButton.append(ui->roundButton_9);
+    listRoundButton.append(ui->roundButton_10);
+    listRoundButton.append(ui->roundButton_11);
+    listRoundButton.append(ui->roundButton_12);
+    listRoundButton.append(ui->roundButton_13);
+    listRoundButton.append(ui->roundButton_14);
+    listRoundButton.append(ui->roundButton_15);
+    listRoundButton.append(ui->roundButton_16);
+    listRoundButton.append(ui->roundButton_17);
+    listRoundButton.append(ui->roundButton_18);
+    listRoundButton.append(ui->roundButton_19);
+    listRoundButton.append(ui->roundButton_20);
+    listRoundButton.append(ui->roundButton_21);
+    listRoundButton.append(ui->roundButton_22);
+    listRoundButton.append(ui->roundButton_23);
+    listRoundButton.append(ui->roundButton_24);
+    listRoundButton.append(ui->roundButton_25);
+    listRoundButton.append(ui->roundButton_26);
+    listRoundButton.append(ui->roundButton_27);
+    listRoundButton.append(ui->roundButton_28);
+    listRoundButton.append(ui->roundButton_29);
+    listRoundButton.append(ui->roundButton_30);
+
+    for (int i = 0; i<rounds; i++){
+        color_roundButtons(listRoundButton.at(i), this->pMatch->getRounds().at(i)->getRoundWinner());
+    }
+
+    // hide the other buttons
+    for(int i = rounds; i<listRoundButton.size(); i++){
+        listRoundButton.at(i)->setVisible(false);
+    }
+}
+
+void MainWindow::color_roundButtons(QPushButton *button, QString team)
+{
+    if (team == "T"){
+        button->setStyleSheet("background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #f86900, stop: 1 #f99145);"
+                                       "border :1px solid ;"
+                                       "border-top-color : black; "
+                                       "border-left-color :black;"
+                                       "border-right-color :black;"
+                                       "border-bottom-color : black");
+    }else if(team == "CT"){
+        button->setStyleSheet("background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #0069b3, stop: 1 #4d9ad1);"
+                                       "border :1px solid ;"
+                                       "border-top-color : black; "
+                                       "border-left-color :black;"
+                                       "border-right-color :black;"
+                                       "border-bottom-color : black;");
+    }else{
+        button->setStyleSheet("background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #0069b3, stop: 1 #FFFFF);"
+                                       "border :1px solid ;"
+                                       "border-top-color : black; "
+                                       "border-left-color :black;"
+                                       "border-right-color :black;"
+                                       "border-bottom-color : black");
+    }
+}
+
 
 
 void MainWindow::on_actionOpen_Demo_triggered()
@@ -57,10 +127,7 @@ void MainWindow::on_actionOpen_Demo_triggered()
         ui->teamNameA->setText(this->pMatch->getTeamNameA());
         ui->teamNameB->setText(this->pMatch->getTeamNameB());
 
-
-        //qDebug() << round << endl;
-        qDebug() << this->pMatch->getRounds().size() << endl;
-
+        create_roundButtons(this->pMatch->getRounds().size());
 
         /*int eflashes = 0;
         int tflashes = 0;
@@ -68,15 +135,16 @@ void MainWindow::on_actionOpen_Demo_triggered()
         int death = 0;
         int assist = 0;*/
         for (int i=0; i < this->pMatch->getRounds().size(); i++){
-            //qDebug() << "--- --- Round" << i+1 << endl;
-            /*qDebug() << this->pMatch->getRounds().at(i)->getStartTick()
+            qDebug() << "--- --- Round" << i+1 << endl;
+            qDebug() << this->pMatch->getRounds().at(i)->getStartTick()
                      << this->pMatch->getRounds().at(i)->getFreezeEndTick()
                      << this->pMatch->getRounds().at(i)->getEndTick()
                      << this->pMatch->getRounds().at(i)->getStartTscore() << this->pMatch->getRounds().at(i)->getStartCTscore()
-                     << this->pMatch->getRounds().at(i)->getReasonRoundEnd() << endl;
-            qDebug() << this->pMatch->getRounds().at(i)->getTmoneySpentTotal() << this->pMatch->getRounds().at(i)->getTmoneySpentRound() << this->pMatch->getRounds().at(i)->getTfreezetimeEndEquipValue() << endl;
-            qDebug() << this->pMatch->getRounds().at(i)->getCTmoneySpentTotal() << this->pMatch->getRounds().at(i)->getCTmoneySpentRound() << this->pMatch->getRounds().at(i)->getCTfreezetimeEndEquipValue() << endl;
-            */
+                     << this->pMatch->getRounds().at(i)->getReasonRoundEnd()
+                     << this->pMatch->getRounds().at(i)->getRoundWinner() << endl;
+            //qDebug() << this->pMatch->getRounds().at(i)->getTmoneySpentTotal() << this->pMatch->getRounds().at(i)->getTmoneySpentRound() << this->pMatch->getRounds().at(i)->getTfreezetimeEndEquipValue() << endl;
+            //qDebug() << this->pMatch->getRounds().at(i)->getCTmoneySpentTotal() << this->pMatch->getRounds().at(i)->getCTmoneySpentRound() << this->pMatch->getRounds().at(i)->getCTfreezetimeEndEquipValue() << endl;
+
             /*qDebug() << "--- Player ---" << this->pMatch->getRounds().at(i)->getListPlayer().size() << endl;
             for(int j=0; j < this->pMatch->getRounds().at(i)->getListPlayer().size(); j++){
                 if(this->pMatch->getRounds().at(i)->getListPlayer().at(j)->getID() == "76561197968320879"){
@@ -105,20 +173,6 @@ void MainWindow::on_actionOpen_Demo_triggered()
                 }
             }*/
         }
-
-        //qDebug() << eflashes << tflashes << kill << death << assist << endl;
-
-
-
-        /*for(int r = 0; r<5; r++){
-            for(int i=0; i<this->pMatch->getRounds().at(r)->getListPlayer().first()->getListPlayerStats().size(); i++){
-                qDebug() << this->pMatch->getRounds().at(r)->getListPlayer().first()->getListPlayerStats().at(i)->getTick()
-                         << this->pMatch->getRounds().at(r)->getListPlayer().first()->getListPlayerStats().at(i)->getKills()
-                         << this->pMatch->getRounds().at(r)->getListPlayer().first()->getListPlayerStats().at(i)->getAssists()
-                         << this->pMatch->getRounds().at(r)->getListPlayer().first()->getListPlayerStats().at(i)->getDeaths()
-                         << endl;
-            }
-        }*/
     }
 }
 
@@ -153,4 +207,154 @@ void MainWindow::on_actionStats_2_triggered()
         dialog->createPieChart();
         dialog->show();
     }
+}
+
+void MainWindow::on_roundButton_clicked()
+{
+    qDebug() << "1" << endl;
+}
+
+void MainWindow::on_roundButton_2_clicked()
+{
+    qDebug() << "2" << endl;
+}
+
+void MainWindow::on_roundButton_3_clicked()
+{
+    qDebug() << "3" << endl;
+}
+
+void MainWindow::on_roundButton_4_clicked()
+{
+    qDebug() << "4" << endl;
+}
+
+void MainWindow::on_roundButton_5_clicked()
+{
+    qDebug() << "5" << endl;
+}
+
+void MainWindow::on_roundButton_6_clicked()
+{
+    qDebug() << "6" << endl;
+}
+
+void MainWindow::on_roundButton_7_clicked()
+{
+    qDebug() << "7" << endl;
+}
+
+void MainWindow::on_roundButton_8_clicked()
+{
+    qDebug() << "8" << endl;
+}
+
+void MainWindow::on_roundButton_9_clicked()
+{
+    qDebug() << "9" << endl;
+}
+
+void MainWindow::on_roundButton_10_clicked()
+{
+    qDebug() << "10" << endl;
+}
+
+void MainWindow::on_roundButton_11_clicked()
+{
+    qDebug() << "11" << endl;
+}
+
+void MainWindow::on_roundButton_12_clicked()
+{
+    qDebug() << "12" << endl;
+}
+
+void MainWindow::on_roundButton_13_clicked()
+{
+    qDebug() << "13" << endl;
+}
+
+void MainWindow::on_roundButton_14_clicked()
+{
+    qDebug() << "14" << endl;
+}
+
+void MainWindow::on_roundButton_15_clicked()
+{
+    qDebug() << "15" << endl;
+}
+
+void MainWindow::on_roundButton_16_clicked()
+{
+    qDebug() << "16" << endl;
+}
+
+void MainWindow::on_roundButton_17_clicked()
+{
+    qDebug() << "17" << endl;
+}
+
+void MainWindow::on_roundButton_18_clicked()
+{
+    qDebug() << "18" << endl;
+}
+
+void MainWindow::on_roundButton_19_clicked()
+{
+    qDebug() << "19" << endl;
+}
+
+void MainWindow::on_roundButton_20_clicked()
+{
+    qDebug() << "20" << endl;
+}
+
+void MainWindow::on_roundButton_21_clicked()
+{
+    qDebug() << "21" << endl;
+}
+
+void MainWindow::on_roundButton_22_clicked()
+{
+    qDebug() << "22" << endl;
+}
+
+void MainWindow::on_roundButton_23_clicked()
+{
+    qDebug() << "23" << endl;
+}
+
+void MainWindow::on_roundButton_24_clicked()
+{
+    qDebug() << "24" << endl;
+}
+
+void MainWindow::on_roundButton_25_clicked()
+{
+    qDebug() << "25" << endl;
+}
+
+void MainWindow::on_roundButton_26_clicked()
+{
+    qDebug() << "26" << endl;
+}
+
+void MainWindow::on_roundButton_27_clicked()
+{
+    qDebug() << "27" << endl;
+}
+
+void MainWindow::on_roundButton_28_clicked()
+{
+    qDebug() << "28" << endl;
+}
+
+void MainWindow::on_roundButton_29_clicked()
+{
+    qDebug() << "29" << endl;
+}
+
+void MainWindow::on_roundButton_30_clicked()
+{
+    qDebug() << "30" << endl;
 }

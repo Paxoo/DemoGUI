@@ -14,11 +14,12 @@ public:
     void setFreezeEndTick(uint32_t freezeEndTick);
     void setEndTick(uint32_t endTick);
     void setRoundPurchase(uint32_t tmoneySpentTotal, ushort tmoneySpentRound, QString tfreezetimeEndEquipValue, uint32_t ctmoneySpentTotal, ushort ctmoneySpentRound, QString ctfreezetimeEndEquipValue);
-    void setRoundEndStats(QString reasonRoundEnd);
+    void setRoundEndStats(QString winner, QString reasonRoundEnd);
 
     uint32_t getStartTick();
     uint32_t getFreezeEndTick();
     uint32_t getEndTick();
+    QString getRoundWinner();
     QString getReasonRoundEnd();
     ushort getStartTscore();
     ushort getStartCTscore();
@@ -39,6 +40,7 @@ private:
 
     ushort mStartTscore = 0;
     ushort mStartCTscore = 0;
+    QString mRoundWinner = "";
 
     uint32_t mTmoneySpentTotal = 0;
     ushort mTmoneySpentRound = 0;
