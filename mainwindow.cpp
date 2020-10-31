@@ -101,27 +101,26 @@ void MainWindow::set_staticText(int round)
     QString score =  "";
 
     // adjust color of team names
-    // scores are updated a round later -> instead of round 16 (teamswitch) round 17
-    if(round < 17 or (round >= 35 and round <= 40) or (round >= 47 and round <= 49)){
-        ui->teamNameA->setTextColor(QColor(248, 150, 0));
-        ui->teamNameB->setTextColor(QColor(21, 156, 255));
-        score = QString::number(this->pMatch->getRounds().at(round-1)->getStartTscore()) + " : " + QString::number(this->pMatch->getRounds().at(round-1)->getStartCTscore());
-
-    }else if((round >= 17 and round <= 34) or (round >= 41 and round <= 46)){
-        ui->teamNameA->setTextColor(QColor(21, 156, 255));
-        ui->teamNameB->setTextColor(QColor(248, 150, 0));
-        score = QString::number(this->pMatch->getRounds().at(round-1)->getStartCTscore()) + " : " + QString::number(this->pMatch->getRounds().at(round-1)->getStartTscore());
-
+    if(round < 16 or (round >= 34 and round <= 39) or (round >= 46 and round <= 48)){
+        ui->teamNameA->setStyleSheet("background-color: rgb(94, 98, 108); color: rgb(248, 150, 0);");
+        ui->teamNameB->setStyleSheet("background-color: rgb(94, 98, 108); color: rgb(21, 156, 255);");
+    }else if((round >= 16 and round <= 33) or (round >= 40 and round <= 45)){
+        ui->teamNameA->setStyleSheet("background-color: rgb(94, 98, 108); color: rgb(21, 156, 255);");
+        ui->teamNameB->setStyleSheet("background-color: rgb(94, 98, 108); color: rgb(248, 150, 0);");
     }else{
-        ui->teamNameA->setTextColor(Qt::red);
-        ui->teamNameB->setTextColor(Qt::red);
-
+        ui->teamNameA->setStyleSheet("background-color: rgb(94, 98, 108); color: red");
+        ui->teamNameB->setStyleSheet("background-color: rgb(94, 98, 108); color: red");
     }
-    ui->teamNameA->setAlignment(Qt::AlignRight);
-    ui->teamNameA->setText(this->pMatch->getTeamNameA());
+    ui->teamNameA->setText("  " + this->pMatch->getTeamNameA());
     ui->teamNameB->setText(this->pMatch->getTeamNameB());
 
     // set score
+    // scores are updated a round later -> instead of round 16 (teamswitch) round 17
+    if(round < 17 or (round >= 35 and round <= 40) or (round >= 47 and round <= 49)){
+        score = QString::number(this->pMatch->getRounds().at(round-1)->getStartTscore()) + " : " + QString::number(this->pMatch->getRounds().at(round-1)->getStartCTscore());
+    }else if((round >= 17 and round <= 34) or (round >= 41 and round <= 46)){
+        score = QString::number(this->pMatch->getRounds().at(round-1)->getStartCTscore()) + " : " + QString::number(this->pMatch->getRounds().at(round-1)->getStartTscore());
+    }
     ui->score->setText(score);
 }
 
