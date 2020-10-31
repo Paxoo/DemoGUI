@@ -131,6 +131,10 @@ private slots:
 
     void on_roundButton_48_clicked();
 
+    void on_actionFreezetimeEndEquipValue_triggered();
+
+    void on_actionGithub_triggered();
+
 private:
     Ui::MainWindow *ui;
     QGraphicsScene *scene = nullptr;

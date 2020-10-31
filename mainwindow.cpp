@@ -5,8 +5,7 @@
 #include <QFileDialog>
 #include <QProcess>
 #include <QDebug>
-#include <QGraphicsEllipseItem>
-#include <QTimeLine>
+#include <QMessageBox>
 
 #include <GUI\Data\parser.h>
 #include <GUI\Stats\statswindow.h>
@@ -100,16 +99,43 @@ void MainWindow::set_staticText(int round)
 {
     QString score =  "";
 
-    // adjust color of team names
+    // adjust color of team names and adjust money text
     if(round < 16 or (round >= 34 and round <= 39) or (round >= 46 and round <= 48)){
         ui->teamNameA->setStyleSheet("background-color: rgb(94, 98, 108); color: rgb(248, 150, 0);");
         ui->teamNameB->setStyleSheet("background-color: rgb(94, 98, 108); color: rgb(21, 156, 255);");
+
+        ui->teamAMoneySpentTotal->setText(QString::number(this->pMatch->getRounds().at(round-1)->getTmoneySpentTotal()) + " $");
+        ui->teamAMoneySpentRound->setText(QString::number(this->pMatch->getRounds().at(round-1)->getTmoneySpentRound()) + " $");
+        ui->teamAFreezetimeEndEqpValue->setText(this->pMatch->getRounds().at(round-1)->getTfreezetimeEndEquipValue());
+
+        ui->teamBMoneySpentTotal->setText(QString::number(this->pMatch->getRounds().at(round-1)->getCTmoneySpentTotal()) + " $");
+        ui->teamBMoneySpentRound->setText(QString::number(this->pMatch->getRounds().at(round-1)->getCTmoneySpentRound()) + " $");
+        ui->teamBFreezetimeEndEqpValue->setText(this->pMatch->getRounds().at(round-1)->getCTfreezetimeEndEquipValue());
+
     }else if((round >= 16 and round <= 33) or (round >= 40 and round <= 45)){
         ui->teamNameA->setStyleSheet("background-color: rgb(94, 98, 108); color: rgb(21, 156, 255);");
         ui->teamNameB->setStyleSheet("background-color: rgb(94, 98, 108); color: rgb(248, 150, 0);");
+
+        ui->teamAMoneySpentTotal->setText(QString::number(this->pMatch->getRounds().at(round-1)->getCTmoneySpentTotal()) + " $");
+        ui->teamAMoneySpentRound->setText(QString::number(this->pMatch->getRounds().at(round-1)->getCTmoneySpentRound()) + " $");
+        ui->teamAFreezetimeEndEqpValue->setText(this->pMatch->getRounds().at(round-1)->getCTfreezetimeEndEquipValue());
+
+        ui->teamBMoneySpentTotal->setText(QString::number(this->pMatch->getRounds().at(round-1)->getTmoneySpentTotal()) + " $");
+        ui->teamBMoneySpentRound->setText(QString::number(this->pMatch->getRounds().at(round-1)->getTmoneySpentRound()) + " $");
+        ui->teamBFreezetimeEndEqpValue->setText(this->pMatch->getRounds().at(round-1)->getTfreezetimeEndEquipValue());
+
     }else{
         ui->teamNameA->setStyleSheet("background-color: rgb(94, 98, 108); color: red");
         ui->teamNameB->setStyleSheet("background-color: rgb(94, 98, 108); color: red");
+
+        ui->teamAMoneySpentTotal->setText("Paxo");
+        ui->teamAMoneySpentRound->setText("ist");
+        ui->teamAFreezetimeEndEqpValue->setText("king");
+
+        ui->teamBMoneySpentTotal->setText("One Piece");
+        ui->teamBMoneySpentRound->setText("ist die beste");
+        ui->teamBFreezetimeEndEqpValue->setText("story ever");
+
     }
     ui->teamNameA->setText("  " + this->pMatch->getTeamNameA());
     ui->teamNameB->setText(this->pMatch->getTeamNameB());
@@ -237,240 +263,358 @@ void MainWindow::on_actionStats_2_triggered()
 
 void MainWindow::on_roundButton_clicked()
 {
-    set_staticText(1);
+    if(this->gDemoParsed == true){
+        set_staticText(1);
+    }
 }
 
 void MainWindow::on_roundButton_2_clicked()
 {
-    set_staticText(2);
+    if(this->gDemoParsed == true){
+        set_staticText(2);
+    }
 }
 
 void MainWindow::on_roundButton_3_clicked()
 {
-    set_staticText(3);
+    if(this->gDemoParsed == true){
+        set_staticText(3);
+    }
 }
 
 void MainWindow::on_roundButton_4_clicked()
 {
-    set_staticText(4);
+    if(this->gDemoParsed == true){
+        set_staticText(4);
+    }
 }
 
 void MainWindow::on_roundButton_5_clicked()
 {
-    set_staticText(5);
+    if(this->gDemoParsed == true){
+        set_staticText(5);
+    }
 }
 
 void MainWindow::on_roundButton_6_clicked()
 {
-    set_staticText(6);
+    if(this->gDemoParsed == true){
+        set_staticText(6);
+    }
 }
 
 void MainWindow::on_roundButton_7_clicked()
 {
-    set_staticText(7);
+    if(this->gDemoParsed == true){
+        set_staticText(7);
+    }
 }
 
 void MainWindow::on_roundButton_8_clicked()
 {
-    set_staticText(8);
+    if(this->gDemoParsed == true){
+        set_staticText(8);
+    }
 }
 
 void MainWindow::on_roundButton_9_clicked()
 {
-    set_staticText(9);
+    if(this->gDemoParsed == true){
+        set_staticText(9);
+    }
 }
 
 void MainWindow::on_roundButton_10_clicked()
 {
-    set_staticText(10);
+    if(this->gDemoParsed == true){
+        set_staticText(10);
+    }
 }
 
 void MainWindow::on_roundButton_11_clicked()
 {
-    set_staticText(11);
+    if(this->gDemoParsed == true){
+        set_staticText(11);
+    }
 }
 
 void MainWindow::on_roundButton_12_clicked()
 {
-    set_staticText(12);
+    if(this->gDemoParsed == true){
+        set_staticText(12);
+    }
 }
 
 void MainWindow::on_roundButton_13_clicked()
 {
-    set_staticText(13);
+    if(this->gDemoParsed == true){
+        set_staticText(13);
+    }
 }
 
 void MainWindow::on_roundButton_14_clicked()
 {
-    set_staticText(14);
+    if(this->gDemoParsed == true){
+        set_staticText(14);
+    }
 }
 
 void MainWindow::on_roundButton_15_clicked()
 {
-    set_staticText(15);
+    if(this->gDemoParsed == true){
+        set_staticText(15);
+    }
 }
 
 void MainWindow::on_roundButton_16_clicked()
 {
-    set_staticText(16);
+    if(this->gDemoParsed == true){
+        set_staticText(16);
+    }
 }
 
 void MainWindow::on_roundButton_17_clicked()
 {
-    set_staticText(17);
+    if(this->gDemoParsed == true){
+        set_staticText(17);
+    }
 }
 
 void MainWindow::on_roundButton_18_clicked()
 {
-    set_staticText(18);
+    if(this->gDemoParsed == true){
+        set_staticText(18);
+    }
 }
 
 void MainWindow::on_roundButton_19_clicked()
 {
-    set_staticText(19);
+    if(this->gDemoParsed == true){
+        set_staticText(19);
+    }
 }
 
 void MainWindow::on_roundButton_20_clicked()
 {
-    set_staticText(20);
+    if(this->gDemoParsed == true){
+        set_staticText(20);
+    }
 }
 
 void MainWindow::on_roundButton_21_clicked()
 {
-    set_staticText(21);
+    if(this->gDemoParsed == true){
+        set_staticText(21);
+    }
 }
 
 void MainWindow::on_roundButton_22_clicked()
 {
-    set_staticText(22);
+    if(this->gDemoParsed == true){
+        set_staticText(22);
+    }
 }
 
 void MainWindow::on_roundButton_23_clicked()
 {
-    set_staticText(23);
+    if(this->gDemoParsed == true){
+        set_staticText(23);
+    }
 }
 
 void MainWindow::on_roundButton_24_clicked()
 {
-    set_staticText(24);
+    if(this->gDemoParsed == true){
+        set_staticText(24);
+    }
 }
 
 void MainWindow::on_roundButton_25_clicked()
 {
-    set_staticText(25);
+    if(this->gDemoParsed == true){
+        set_staticText(25);
+    }
 }
 
 void MainWindow::on_roundButton_26_clicked()
 {
-    set_staticText(26);
+    if(this->gDemoParsed == true){
+        set_staticText(26);
+    }
 }
 
 void MainWindow::on_roundButton_27_clicked()
 {
-    set_staticText(27);
+    if(this->gDemoParsed == true){
+        set_staticText(27);
+    }
 }
 
 void MainWindow::on_roundButton_28_clicked()
 {
-    set_staticText(28);
+    if(this->gDemoParsed == true){
+        set_staticText(28);
+    }
 }
 
 void MainWindow::on_roundButton_29_clicked()
 {
-    set_staticText(29);
+    if(this->gDemoParsed == true){
+        set_staticText(29);
+    }
 }
 
 void MainWindow::on_roundButton_30_clicked()
 {
-    set_staticText(30);
+    if(this->gDemoParsed == true){
+        set_staticText(30);
+    }
 }
 
 void MainWindow::on_roundButton_31_clicked()
 {
-    set_staticText(31);
+    if(this->gDemoParsed == true){
+        set_staticText(31);
+    }
 }
 
 void MainWindow::on_roundButton_32_clicked()
 {
-    set_staticText(32);
+    if(this->gDemoParsed == true){
+        set_staticText(32);
+    }
 }
 
 void MainWindow::on_roundButton_33_clicked()
 {
-    set_staticText(33);
+    if(this->gDemoParsed == true){
+        set_staticText(34);
+    }
 }
 
 void MainWindow::on_roundButton_34_clicked()
 {
-    set_staticText(34);
+    if(this->gDemoParsed == true){
+        set_staticText(34);
+    }
 }
 
 void MainWindow::on_roundButton_35_clicked()
 {
-    set_staticText(35);
+    if(this->gDemoParsed == true){
+        set_staticText(35);
+    }
 }
 
 void MainWindow::on_roundButton_36_clicked()
 {
-    set_staticText(36);
+    if(this->gDemoParsed == true){
+        set_staticText(36);
+    }
 }
 
 void MainWindow::on_roundButton_37_clicked()
 {
-    set_staticText(37);
+    if(this->gDemoParsed == true){
+        set_staticText(37);
+    }
 }
 
 void MainWindow::on_roundButton_38_clicked()
 {
-    set_staticText(38);
+    if(this->gDemoParsed == true){
+        set_staticText(38);
+    }
 }
 
 void MainWindow::on_roundButton_39_clicked()
 {
-    set_staticText(39);
+    if(this->gDemoParsed == true){
+        set_staticText(39);
+    }
 }
 
 void MainWindow::on_roundButton_40_clicked()
 {
-    set_staticText(40);
+    if(this->gDemoParsed == true){
+        set_staticText(40);
+    }
 }
 
 void MainWindow::on_roundButton_41_clicked()
 {
-    set_staticText(41);
+    if(this->gDemoParsed == true){
+        set_staticText(41);
+    }
 }
 
 void MainWindow::on_roundButton_42_clicked()
 {
-    set_staticText(42);
+    if(this->gDemoParsed == true){
+        set_staticText(42);
+    }
 }
 
 void MainWindow::on_roundButton_43_clicked()
 {
-    set_staticText(43);
+    if(this->gDemoParsed == true){
+        set_staticText(43);
+    }
 }
 
 void MainWindow::on_roundButton_44_clicked()
 {
-    set_staticText(44);
+    if(this->gDemoParsed == true){
+        set_staticText(44);
+    }
 }
 
 void MainWindow::on_roundButton_45_clicked()
 {
-    set_staticText(45);
+    if(this->gDemoParsed == true){
+        set_staticText(45);
+    }
 }
 
 void MainWindow::on_roundButton_46_clicked()
 {
-    set_staticText(46);
+    if(this->gDemoParsed == true){
+        set_staticText(46);
+    }
 }
 
 void MainWindow::on_roundButton_47_clicked()
 {
-    set_staticText(47);
+    if(this->gDemoParsed == true){
+        set_staticText(47);
+    }
 }
 
 void MainWindow::on_roundButton_48_clicked()
 {
-    set_staticText(48);
+    if(this->gDemoParsed == true){
+        set_staticText(48);
+    }
+}
+
+void MainWindow::on_actionFreezetimeEndEquipValue_triggered()
+{
+    QMessageBox msgBox;
+    msgBox.setWindowTitle("Classification equipment value");
+    msgBox.setText("Round 1 and 16 = Pistol\n\n"
+                   "Value < 2000 = Full Eco\n\n"
+                   "2000 <= Value < 8500 = Eco\n\n"
+                   "8500 <= Value < 22000 = Half Buy\n\n"
+                   "Value >= 22000 = Full Buy");
+    msgBox.exec();
+}
+
+void MainWindow::on_actionGithub_triggered()
+{
+    QMessageBox msgBox;
+    msgBox.setWindowTitle("Contact information");
+    msgBox.setText("For questions, problems or feedback please use the git repository. In this repository, you will find the source code and issue tracker pertaining to the csgo package.");
+    msgBox.setInformativeText("<a href=\"https://github.com/Paxoo/DemoGUI\">Github: Paxoo CSGODemo</a>");
+    msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+    msgBox.exec();
 }
