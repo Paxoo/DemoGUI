@@ -56,6 +56,11 @@ void Match::addRound()
     this->mListRounds.append(QSharedPointer<Round>(new Round(this->mListPlayerIDs)));
 }
 
+void Match::removeRound(int index)
+{
+    this->mListRounds.removeAt(index);
+}
+
 QList<QSharedPointer<Round>> Match::getRounds()
 {
     return this->mListRounds;

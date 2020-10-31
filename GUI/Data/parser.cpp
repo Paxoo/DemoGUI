@@ -4,6 +4,7 @@
 Parser::Parser(Match &match, float mapRatio)
 {
     this->mProcess = new QProcess();
+    static bool gTeamname = true;
 
     QObject::connect(this->mProcess,&QProcess::readyRead,this->mProcess,[&](){
         QString result = this->mProcess->readAllStandardOutput();
@@ -31,6 +32,7 @@ Parser::Parser(Match &match, float mapRatio)
                 if(match.getRounds().size() == 1){
                     match.getRounds().last()->setRoundStartStats(items[1].toUInt(), 0, 0);
                 }else{
+                    // standard T CT
                     match.getRounds().last()->setRoundStartStats(items[1].toUInt(), items[3].toUShort(), items[4].toUShort());
                 }
             }
@@ -47,18 +49,25 @@ Parser::Parser(Match &match, float mapRatio)
                 reason[12]="TargetSaved";
 
                 match.getRounds().last()->setRoundEndStats(items[5], reason[items[8].toUShort()]);
-                match.setTeamNameA(items[6]);
-                match.setTeamNameB(items[7]);
+
+                if(gTeamname == true){
+                    match.setTeamNameA(items[6]);
+                    match.setTeamNameB(items[7]);
+                    gTeamname = false;
+                }
+
+                match.getRounds().last()->setEndTick(items[1].toUInt());
+
+                // there is a demo bug, where the first round is actually the warmup. teamname has [READY] -> remove round from list
+                if(match.getTeamNameA().contains("[READY]") == true){
+                    match.removeRound(0);
+                    gTeamname = true;
+                }
             }
 
             if (str.contains("FREEZE END")){
                 items = str.split(", ");
                 match.getRounds().last()->setFreezeEndTick(items[1].toUInt());
-            }
-
-            if (str.contains("ROUND END OFFICIAL")){
-                items = str.split(", ");
-                match.getRounds().last()->setEndTick(items[1].toUInt());
             }
 
             if (str.contains("ROUND PURCHASE")){
@@ -165,7 +174,6 @@ void Parser::runParser(QString fileName)
     QString cmd = "go run parse_demofile.go -demo " + fileName.toUtf8();
     this->mProcess->start(cmd);
     this->mProcess->waitForFinished(-1); // sets current thread to sleep and waits for pingProcess end
-
 }
 
 QString Parser::calculateEquipValue(ushort value, QString round)

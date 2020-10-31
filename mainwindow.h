@@ -6,6 +6,7 @@
 #include <QParallelAnimationGroup>
 #include <GUI\Data\match.h>
 #include <QPushButton>
+#include <QTextEdit>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -24,6 +25,7 @@ public:
 private slots:
     void create_roundButtons(int rounds);
     void color_roundButtons(QPushButton* button, QString team);
+    void set_staticText(int round);
 
     void on_actionOpen_Demo_triggered();
 
@@ -92,6 +94,42 @@ private slots:
     void on_roundButton_29_clicked();
 
     void on_roundButton_30_clicked();
+
+    void on_roundButton_31_clicked();
+
+    void on_roundButton_32_clicked();
+
+    void on_roundButton_33_clicked();
+
+    void on_roundButton_34_clicked();
+
+    void on_roundButton_35_clicked();
+
+    void on_roundButton_36_clicked();
+
+    void on_roundButton_37_clicked();
+
+    void on_roundButton_38_clicked();
+
+    void on_roundButton_39_clicked();
+
+    void on_roundButton_40_clicked();
+
+    void on_roundButton_41_clicked();
+
+    void on_roundButton_42_clicked();
+
+    void on_roundButton_43_clicked();
+
+    void on_roundButton_44_clicked();
+
+    void on_roundButton_45_clicked();
+
+    void on_roundButton_46_clicked();
+
+    void on_roundButton_47_clicked();
+
+    void on_roundButton_48_clicked();
 
 private:
     Ui::MainWindow *ui;

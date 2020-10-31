@@ -20,6 +20,7 @@ public:
     QString getTeamNameB();
 
     void addRound();
+    void removeRound(int index);
     QList<QSharedPointer<Round>> getRounds();
     QList<QString> getListPlayerIDs();
 
