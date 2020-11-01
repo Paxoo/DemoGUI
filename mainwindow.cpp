@@ -7,7 +7,6 @@
 #include <QDebug>
 #include <QMessageBox>
 
-#include <GUI\Data\parser.h>
 #include <GUI\Stats\statswindow.h>
 
 MainWindow::MainWindow(QWidget *parent)
@@ -23,7 +22,7 @@ MainWindow::~MainWindow()
     delete ui;
     delete scene;
     delete pMatch;
-    delete group;
+    delete pParser;
     listRoundButton.clear();
 }
 
@@ -59,7 +58,6 @@ void MainWindow::create_roundButtons(int rounds)
             color_roundButtons(listRoundButton.last(), "overtime");
             break;
         }
-        qDebug() << rounds << i << endl;
         color_roundButtons(listRoundButton.at(i), this->pMatch->getRounds().at(i)->getRoundWinner());
     }
 
@@ -157,9 +155,23 @@ void MainWindow::on_actionOpen_Demo_triggered()
     qDebug() << fileName << endl;
 
     if( !fileName.isNull()){
+        // active demo? clear it!
+        if(this->gDemoParsed == true){
+            this->gDemoParsed = false;
+            // set all buttons visible again
+            for(int i = 0; i<listRoundButton.size(); i++){
+                listRoundButton.at(i)->setVisible(true);
+            }
+            listRoundButton.clear();
+
+            delete this->pMatch;
+            delete this->pParser;
+            this->pMatch = new Match();
+        }
+
         // get the information!
-        Parser parser(*this->pMatch, this->mapRatio);
-        parser.runParser(fileName);
+        this->pParser = new Parser(*this->pMatch, this->mapRatio);
+        this->pParser->runParser(fileName);
 
         this->gDemoParsed = true;
 
@@ -177,7 +189,6 @@ void MainWindow::on_actionOpen_Demo_triggered()
 
         create_roundButtons(this->pMatch->getRounds().size());
         set_staticText(1);
-
 
         /*int eflashes = 0;
         int tflashes = 0;
@@ -488,7 +499,7 @@ void MainWindow::on_roundButton_32_clicked()
 void MainWindow::on_roundButton_33_clicked()
 {
     if(this->gDemoParsed == true){
-        set_staticText(34);
+        set_staticText(33);
     }
 }
 

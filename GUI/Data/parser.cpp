@@ -4,7 +4,7 @@
 Parser::Parser(Match &match, float mapRatio)
 {
     this->mProcess = new QProcess();
-    static bool gTeamname = true;
+    qDebug() << "init" << gTeamname << endl;
 
     QObject::connect(this->mProcess,&QProcess::readyRead,this->mProcess,[&](){
         QString result = this->mProcess->readAllStandardOutput();
@@ -54,6 +54,7 @@ Parser::Parser(Match &match, float mapRatio)
                     match.setTeamNameA(items[6]);
                     match.setTeamNameB(items[7]);
                     gTeamname = false;
+                    qDebug() << "end" << gTeamname << endl;
                 }
 
                 match.getRounds().last()->setEndTick(items[1].toUInt());
@@ -166,6 +167,11 @@ Parser::Parser(Match &match, float mapRatio)
             }
         }
     });
+}
+
+Parser::~Parser()
+{
+    delete mProcess;
 }
 
 void Parser::runParser(QString fileName)

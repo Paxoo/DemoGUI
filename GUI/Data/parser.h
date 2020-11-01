@@ -7,9 +7,11 @@ class Parser
 {
 public:
     Parser(Match &match, float mapRatio);
+    ~Parser();
     void runParser(QString fileName);
 
 private:
+    bool gTeamname = true;
     QProcess* mProcess;
     QString calculateEquipValue(ushort value, QString round);
     QString getWeaponType(QString type);

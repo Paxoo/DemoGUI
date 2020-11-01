@@ -7,6 +7,7 @@
 #include <GUI\Data\match.h>
 #include <QPushButton>
 #include <QTextEdit>
+#include <GUI\Data\parser.h>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -139,8 +140,8 @@ private:
     Ui::MainWindow *ui;
     QGraphicsScene *scene = nullptr;
     Match *pMatch = nullptr;
+    Parser *pParser= nullptr;
 
-    QParallelAnimationGroup *group = nullptr;
     bool gDemoParsed = false;
     QList<QPushButton*> listRoundButton;
 };
